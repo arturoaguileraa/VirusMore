@@ -1,0 +1,29 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /opt/docker/virusmore
+
+            git pull origin main
+
+            docker compose -f docker-compose.prod.yml build --no-cache server web
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+
+            # Run pending DB migrations
+            docker compose -f docker-compose.prod.yml exec -T server bun run db:migrate
+
+            # Clean up unused images
+            docker image prune -f

@@ -34,15 +34,10 @@ services:
       CORS_ORIGIN: https://virusmore.com
       VIRUSTOTAL_API_KEY: ${VIRUSTOTAL_API_KEY}
       GOOGLE_GENERATIVE_AI_API_KEY: ${GOOGLE_GENERATIVE_AI_API_KEY}
+    ports:
+      - "3000:3000"
     networks:
       - internal
-      - dokploy-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.virusmore-api.rule=Host(`api.virusmore.com`)"
-      - "traefik.http.routers.virusmore-api.entrypoints=websecure"
-      - "traefik.http.routers.virusmore-api.tls.certresolver=letsencrypt"
-      - "traefik.http.services.virusmore-api.loadbalancer.server.port=3000"
     deploy:
       resources:
         limits:
@@ -60,19 +55,10 @@ services:
     environment:
       NODE_ENV: production
       PUBLIC_SERVER_URL: https://api.virusmore.com
+    ports:
+      - "4321:4321"
     networks:
-      - dokploy-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.virusmore-web.rule=Host(`virusmore.com`) || Host(`www.virusmore.com`)"
-      - "traefik.http.routers.virusmore-web.entrypoints=websecure"
-      - "traefik.http.routers.virusmore-web.tls.certresolver=letsencrypt"
-      - "traefik.http.services.virusmore-web.loadbalancer.server.port=4321"
-      # Redirect www → apex
-      - "traefik.http.middlewares.virusmore-www.redirectregex.regex=^https://www\\.virusmore\\.com/(.*)"
-      - "traefik.http.middlewares.virusmore-www.redirectregex.replacement=https://virusmore.com/$${1}"
-      - "traefik.http.middlewares.virusmore-www.redirectregex.permanent=true"
-      - "traefik.http.routers.virusmore-web.middlewares=virusmore-www"
+      - internal
     deploy:
       resources:
         limits:
@@ -83,6 +69,4 @@ volumes:
 
 networks:
   internal:
-    internal: true
-  dokploy-network:
-    external: true
+    driver: bridge
