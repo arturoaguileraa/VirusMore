@@ -1,0 +1,8 @@
+---
+import AnalysisPage from "../../../components/AnalysisPage.astro";
+
+const { hash } = Astro.params;
+if (!hash) return Astro.redirect("/");
+---
+
+<AnalysisPage type="file" id={hash} />

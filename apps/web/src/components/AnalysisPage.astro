@@ -1,0 +1,294 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Logo from "./Logo.astro";
+import { DocViewer } from "./DocViewer";
+import { ChatAgent } from "./ChatAgent";
+import { ThreatBadge } from "./ThreatBadge";
+import { EngineGrid } from "./EngineGrid";
+import { getThreatLevel } from "@virusmore/api/types";
+import { orpc } from "../lib/orpc";
+import type { AnalysisType, VTReport } from "@virusmore/api/types";
+
+interface Props {
+  type: AnalysisType;
+  id: string;
+}
+
+const { type, id } = Astro.props;
+const serverUrl = import.meta.env.PUBLIC_SERVER_URL ?? "http://localhost:3000";
+
+let report: VTReport | null = null;
+let initialDoc: string | null = null;
+let error: string | null = null;
+
+try {
+  const result = await orpc.analysis.get({ type, id });
+  report = result.report;
+  initialDoc = result.doc;
+} catch (err) {
+  error = err instanceof Error ? err.message : "Failed to fetch analysis";
+}
+
+const threat = report ? getThreatLevel(report.attributes.last_analysis_stats) : null;
+const stats  = report?.attributes.last_analysis_stats;
+const displayName = report?.attributes.meaningful_name
+  ?? report?.attributes.name
+  ?? report?.attributes.url
+  ?? id;
+
+const pageTitle = `${displayName.slice(0, 48)}${displayName.length > 48 ? "…" : ""} — VirusMore`;
+
+const typeLabel = type === "ip" ? "IP Address" : type.charAt(0).toUpperCase() + type.slice(1);
+const vtType    = type === "ip" ? "ip-address" : type;
+
+const meta: { label: string; value: string }[] = [];
+if (report) {
+  const a = report.attributes;
+  if (a.sha256)           meta.push({ label: "SHA256",     value: a.sha256 });
+  if (a.md5)              meta.push({ label: "MD5",         value: a.md5 });
+  if (a.sha1)             meta.push({ label: "SHA1",        value: a.sha1 });
+  if (a.size)             meta.push({ label: "Size",        value: `${(a.size / 1024).toFixed(1)} KB` });
+  if (a.type_description) meta.push({ label: "Type",        value: a.type_description });
+  if (a.type_extension)   meta.push({ label: "Extension",   value: a.type_extension });
+  if (a.meaningful_name)  meta.push({ label: "Name",        value: a.meaningful_name });
+  if (a.times_submitted)  meta.push({ label: "Submissions", value: String(a.times_submitted) });
+  if (a.url)              meta.push({ label: "URL",         value: a.url });
+  if (a.country)          meta.push({ label: "Country",     value: a.country });
+  if (a.asn)              meta.push({ label: "ASN",         value: `AS${a.asn}` });
+  if (a.as_owner)         meta.push({ label: "AS Owner",    value: a.as_owner });
+  if (a.registrar)        meta.push({ label: "Registrar",   value: a.registrar });
+  if (a.reputation !== undefined) meta.push({ label: "Reputation", value: String(a.reputation) });
+}
+---
+
+<Layout title={pageTitle}>
+  <div class="flex flex-col h-screen overflow-hidden">
+
+    <!-- Top header -->
+    <header class="h-14 border-b border-border bg-background/95 backdrop-blur-sm shrink-0 sticky top-0 z-50">
+      <div class="h-full px-4 flex items-center gap-3">
+
+        <!-- Logo + brand -->
+        <a href="/" class="flex items-center gap-2 text-foreground hover:text-primary transition-colors shrink-0" aria-label="VirusMore home">
+          <Logo size={18} class="text-primary" />
+          <span class="font-semibold text-sm tracking-tight hidden sm:block">VirusMore</span>
+        </a>
+
+        <span class="text-border text-lg font-light select-none">/</span>
+
+        <!-- Breadcrumb: type + id -->
+        <div class="flex items-center gap-2 min-w-0 flex-1">
+          <span class="text-xs font-medium text-muted-foreground bg-secondary border border-border rounded px-1.5 py-0.5 shrink-0">
+            {typeLabel}
+          </span>
+          <code class="text-xs text-muted-foreground truncate font-mono">{id}</code>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-2 shrink-0">
+          <a
+            href={`https://www.virustotal.com/gui/${vtType}/${id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors border border-border rounded-md px-2.5 py-1.5 hover:bg-secondary"
+          >
+            View on VirusTotal
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+          </a>
+          <button
+            id="theme-toggle"
+            class="h-8 w-8 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+            aria-label="Toggle color theme"
+          >
+            <svg id="icon-moon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+            <svg id="icon-sun" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden">
+              <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    {error ? (
+      <!-- Error state -->
+      <div class="flex-1 flex items-center justify-center p-8">
+        <div class="text-center max-w-sm space-y-4">
+          <div class="mx-auto size-12 rounded-full bg-secondary border border-border flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-muted-foreground">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-foreground">Analysis not found</h2>
+            <p class="text-sm text-muted-foreground mt-1">{error}</p>
+          </div>
+          <a href="/" class="inline-flex items-center gap-1.5 text-sm text-primary hover:underline underline-offset-4">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Back to home
+          </a>
+        </div>
+      </div>
+    ) : (
+      <div class="flex flex-1 min-h-0 overflow-hidden">
+
+        <!-- Left sidebar -->
+        <aside class="w-60 shrink-0 border-r border-border bg-card overflow-y-auto hidden md:flex flex-col">
+
+          <!-- Verdict -->
+          {threat && stats && (
+            <div class="p-4 border-b border-border">
+              <ThreatBadge client:load threat={threat} stats={stats} />
+            </div>
+          )}
+
+          <!-- Navigation -->
+          <nav class="p-2 border-b border-border">
+            <p class="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground mb-1.5 px-2 pt-1">
+              Sections
+            </p>
+            {[
+              { href: "#overview",      label: "Overview" },
+              { href: "#documentation", label: "AI Documentation" },
+              { href: "#detections",    label: "Detections" },
+              { href: "#metadata",      label: "Metadata" },
+            ].map(({ href, label }) => (
+              <a
+                href={href}
+                class="flex items-center px-2 py-1.5 text-sm rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+              >
+                {label}
+              </a>
+            ))}
+          </nav>
+
+          <!-- Metadata -->
+          {meta.length > 0 && (
+            <div class="p-3 flex-1 overflow-y-auto">
+              <p class="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground mb-3 px-1">
+                Properties
+              </p>
+              <dl class="space-y-3 px-1">
+                {meta.map(({ label, value }) => (
+                  <div>
+                    <dt class="text-[0.62rem] uppercase tracking-wide text-muted-foreground font-medium">{label}</dt>
+                    <dd class="text-[0.78rem] font-mono break-all text-foreground mt-0.5 leading-snug">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          )}
+        </aside>
+
+        <!-- Main content -->
+        <main class="flex-1 overflow-y-auto min-w-0 bg-background">
+
+          <!-- Overview -->
+          <section id="overview" class="px-6 lg:px-8 py-6 border-b border-border">
+            <h1 class="text-xl font-bold tracking-tight break-all text-foreground leading-snug mb-3">
+              {displayName}
+            </h1>
+            {threat && stats && (
+              <ThreatBadge client:load threat={threat} stats={stats} />
+            )}
+            {report?.attributes.tags && report.attributes.tags.length > 0 && (
+              <div class="flex flex-wrap gap-1.5 mt-3">
+                {report.attributes.tags.map((tag) => (
+                  <span class="text-[0.68rem] bg-secondary border border-border rounded px-2 py-0.5 text-muted-foreground font-mono">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <!-- AI Documentation -->
+          <section id="documentation" class="border-b border-border">
+            <div class="px-6 lg:px-8 py-3 border-b border-border flex items-center justify-between">
+              <h2 class="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                AI Documentation
+              </h2>
+              {!initialDoc && (
+                <span class="text-[0.65rem] font-medium bg-[--threat-suspicious]/10 text-[--threat-suspicious] border border-[--threat-suspicious]/30 rounded-full px-2 py-0.5">
+                  Generating
+                </span>
+              )}
+            </div>
+            {report && (
+              <DocViewer
+                client:load
+                analysisId={id}
+                type={type}
+                initialDoc={initialDoc}
+                serverUrl={serverUrl}
+              />
+            )}
+          </section>
+
+          <!-- Detections -->
+          {report?.attributes.last_analysis_results && (
+            <section id="detections" class="px-6 lg:px-8 py-6 border-b border-border">
+              <h2 class="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-5">
+                Engine Detections
+              </h2>
+              <EngineGrid client:visible results={report.attributes.last_analysis_results} />
+            </section>
+          )}
+
+          <!-- Metadata table -->
+          {meta.length > 0 && (
+            <section id="metadata" class="px-6 lg:px-8 py-6">
+              <h2 class="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
+                File Properties
+              </h2>
+              <table class="w-full text-sm border-collapse">
+                <tbody>
+                  {meta.map(({ label, value }) => (
+                    <tr class="border-b border-border last:border-0">
+                      <td class="py-2 pr-6 text-muted-foreground font-medium w-36 whitespace-nowrap text-sm align-top">
+                        {label}
+                      </td>
+                      <td class="py-2 font-mono text-[0.8rem] break-all text-foreground align-top">
+                        {value}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </section>
+          )}
+
+        </main>
+      </div>
+    )}
+  </div>
+
+  {report && (
+    <ChatAgent client:only="react" report={report} serverUrl={serverUrl} />
+  )}
+</Layout>
+
+<script>
+  const btn  = document.getElementById("theme-toggle");
+  const moon = document.getElementById("icon-moon");
+  const sun  = document.getElementById("icon-sun");
+
+  function syncIcons() {
+    const dark = document.documentElement.classList.contains("dark");
+    moon?.classList.toggle("hidden", dark);
+    sun?.classList.toggle("hidden", !dark);
+  }
+  syncIcons();
+
+  btn?.addEventListener("click", () => {
+    const dark = document.documentElement.classList.toggle("dark");
+    localStorage.setItem("theme", dark ? "dark" : "light");
+    syncIcons();
+  });
+</script>

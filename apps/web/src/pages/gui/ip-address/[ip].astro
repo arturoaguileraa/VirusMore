@@ -1,0 +1,8 @@
+---
+import AnalysisPage from "../../../components/AnalysisPage.astro";
+
+const { ip } = Astro.params;
+if (!ip) return Astro.redirect("/");
+---
+
+<AnalysisPage type="ip" id={ip} />

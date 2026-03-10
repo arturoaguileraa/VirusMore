@@ -1,0 +1,75 @@
+import type { ThreatLevel } from "@virusmore/api/types";
+import { ShieldAlert, ShieldCheck, ShieldOff, ShieldX } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const CONFIG = {
+	malicious: {
+		icon: ShieldX,
+		badge: "bg-destructive/10 text-destructive border-destructive/30",
+		count: "text-destructive",
+	},
+	suspicious: {
+		icon: ShieldAlert,
+		badge:
+			"bg-[--threat-suspicious]/10 text-[--threat-suspicious] border-[--threat-suspicious]/30",
+		count: "text-[--threat-suspicious]",
+	},
+	clean: {
+		icon: ShieldCheck,
+		badge:
+			"bg-[--threat-clean]/10 text-[--threat-clean] border-[--threat-clean]/30",
+		count: "text-[--threat-clean]",
+	},
+	unknown: {
+		icon: ShieldOff,
+		badge: "bg-secondary text-muted-foreground border-border",
+		count: "text-muted-foreground",
+	},
+} as const;
+
+interface Props {
+	threat: ThreatLevel;
+	stats: {
+		malicious: number;
+		suspicious: number;
+		undetected: number;
+		harmless: number;
+	};
+}
+
+export function ThreatBadge({ threat, stats }: Props) {
+	const cfg = CONFIG[threat.level];
+	const Icon = cfg.icon;
+	const total =
+		stats.malicious + stats.suspicious + stats.undetected + stats.harmless;
+
+	return (
+		<div className="flex flex-col gap-2">
+			<span
+				className={cn(
+					"inline-flex w-fit items-center gap-1.5 rounded-md border px-2.5 py-1 font-semibold text-sm",
+					cfg.badge,
+				)}
+			>
+				<Icon className="size-3.5 shrink-0" />
+				{threat.label}
+			</span>
+
+			<p className="text-muted-foreground text-sm leading-snug">
+				<span className={cn("font-semibold tabular-nums", cfg.count)}>
+					{stats.malicious}
+				</span>
+				{" of "}
+				<span className="font-medium text-foreground tabular-nums">
+					{total}
+				</span>
+				{" engines flagged as malicious"}
+				{stats.suspicious > 0 && (
+					<span className="ml-1.5 text-[--threat-suspicious] text-xs">
+						(+{stats.suspicious} suspicious)
+					</span>
+				)}
+			</p>
+		</div>
+	);
+}

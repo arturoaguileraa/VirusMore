@@ -1,28 +1,40 @@
 {
-  "name": "@virusmore/api",
-  "type": "module",
-  "exports": {
-    ".": {
-      "default": "./src/index.ts"
-    },
-    "./*": {
-      "default": "./src/*.ts"
-    }
-  },
-  "scripts": {},
-  "dependencies": {
-    "@orpc/client": "catalog:",
-    "@orpc/openapi": "catalog:",
-    "@orpc/server": "catalog:",
-    "@orpc/zod": "catalog:",
-    "@virusmore/db": "workspace:*",
-    "@virusmore/env": "workspace:*",
-    "dotenv": "catalog:",
-    "zod": "catalog:"
-  },
-  "devDependencies": {
-    "@virusmore/config": "workspace:*",
-    "hono": "catalog:",
-    "typescript": "catalog:"
-  }
+	"name": "@virusmore/api",
+	"type": "module",
+	"exports": {
+		".": {
+			"default": "./src/index.ts"
+		},
+		"./types": {
+			"default": "./src/types.ts"
+		},
+		"./services/virustotal": {
+			"default": "./src/services/virustotal.ts"
+		},
+		"./services/ai-docs": {
+			"default": "./src/services/ai-docs.ts"
+		},
+		"./*": {
+			"default": "./src/*.ts"
+		}
+	},
+	"scripts": {},
+	"dependencies": {
+		"@ai-sdk/google": "^1.2.12",
+		"@orpc/client": "catalog:",
+		"@orpc/openapi": "catalog:",
+		"@orpc/server": "catalog:",
+		"@orpc/zod": "catalog:",
+		"@virusmore/db": "workspace:*",
+		"@virusmore/env": "workspace:*",
+		"ai": "^4.3.16",
+		"dotenv": "catalog:",
+		"drizzle-orm": "^0.45.1",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@virusmore/config": "workspace:*",
+		"hono": "catalog:",
+		"typescript": "catalog:"
+	}
 }

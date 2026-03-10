@@ -9,65 +9,63 @@ import { env } from "@virusmore/env/server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { chatHandler } from "./handlers/chat";
+import { docsStreamHandler } from "./handlers/docs-stream";
 
 const app = new Hono();
 
 app.use(logger());
 app.use(
-  "/*",
-  cors({
-    origin: env.CORS_ORIGIN,
-    allowMethods: ["GET", "POST", "OPTIONS"],
-  }),
+	"/*",
+	cors({
+		origin: env.CORS_ORIGIN,
+		allowMethods: ["GET", "POST", "OPTIONS"],
+	}),
 );
 
-export const apiHandler = new OpenAPIHandler(appRouter, {
-  plugins: [
-    new OpenAPIReferencePlugin({
-      schemaConverters: [new ZodToJsonSchemaConverter()],
-    }),
-  ],
-  interceptors: [
-    onError((error) => {
-      console.error(error);
-    }),
-  ],
+// ─── oRPC ─────────────────────────────────────────────────────────────────────
+const rpcHandler = new RPCHandler(appRouter, {
+	interceptors: [onError((error) => console.error(error))],
 });
 
-export const rpcHandler = new RPCHandler(appRouter, {
-  interceptors: [
-    onError((error) => {
-      console.error(error);
-    }),
-  ],
+const apiHandler = new OpenAPIHandler(appRouter, {
+	plugins: [
+		new OpenAPIReferencePlugin({
+			schemaConverters: [new ZodToJsonSchemaConverter()],
+		}),
+	],
+	interceptors: [onError((error) => console.error(error))],
 });
 
 app.use("/*", async (c, next) => {
-  const context = await createContext({ context: c });
+	const context = await createContext({ context: c });
 
-  const rpcResult = await rpcHandler.handle(c.req.raw, {
-    prefix: "/rpc",
-    context: context,
-  });
+	const rpcResult = await rpcHandler.handle(c.req.raw, {
+		prefix: "/rpc",
+		context,
+	});
+	if (rpcResult.matched) {
+		return c.newResponse(rpcResult.response.body, rpcResult.response);
+	}
 
-  if (rpcResult.matched) {
-    return c.newResponse(rpcResult.response.body, rpcResult.response);
-  }
+	const apiResult = await apiHandler.handle(c.req.raw, {
+		prefix: "/api-reference",
+		context,
+	});
+	if (apiResult.matched) {
+		return c.newResponse(apiResult.response.body, apiResult.response);
+	}
 
-  const apiResult = await apiHandler.handle(c.req.raw, {
-    prefix: "/api-reference",
-    context: context,
-  });
-
-  if (apiResult.matched) {
-    return c.newResponse(apiResult.response.body, apiResult.response);
-  }
-
-  await next();
+	await next();
 });
 
-app.get("/", (c) => {
-  return c.text("OK");
-});
+// ─── AI SDK Chat (streaming) ──────────────────────────────────────────────────
+app.post("/api/chat", chatHandler);
+
+// ─── Docs SSE stream ──────────────────────────────────────────────────────────
+app.get("/api/docs/stream/:type/:id", docsStreamHandler);
+
+// ─── Health ───────────────────────────────────────────────────────────────────
+app.get("/", (c) => c.text("OK"));
 
 export default app;

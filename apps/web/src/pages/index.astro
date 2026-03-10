@@ -1,55 +1,183 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { orpc } from "../lib/orpc";
+import Logo from "../components/Logo.astro";
 
-const TITLE_TEXT = `
- ██████╗ ███████╗████████╗████████╗███████╗██████╗
- ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗
- ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝
- ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗
- ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║
- ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝
+const examples = [
+  {
+    type: "file",
+    id: "3ecc0186adba60fb53e9f6c494623dcea979a95c3e66a52896693b8d22f5e18b",
+    label: "WannaCry ransomware (Trojan.Ransom.WannaCryptor)",
+    threat: "malicious",
+  },
+  {
+    type: "domain",
+    id: "malware.wicar.org",
+    label: "malware.wicar.org",
+    threat: "malicious",
+  },
+  {
+    type: "ip-address",
+    id: "1.1.1.1",
+    label: "1.1.1.1 — Cloudflare DNS",
+    threat: "clean",
+  },
+];
 
- ████████╗    ███████╗████████╗ █████╗  ██████╗██╗  ██╗
- ╚══██╔══╝    ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
-    ██║       ███████╗   ██║   ███████║██║     █████╔╝
-    ██║       ╚════██║   ██║   ██╔══██║██║     ██╔═██╗
-    ██║       ███████║   ██║   ██║  ██║╚██████╗██║  ██╗
-    ╚═╝       ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
- `;
+const threatVariant: Record<string, string> = {
+  malicious: "bg-destructive/10 text-destructive border-destructive/25",
+  suspicious: "bg-[--threat-suspicious]/10 text-[--threat-suspicious] border-[--threat-suspicious]/25",
+  clean: "bg-[--threat-clean]/10 text-[--threat-clean] border-[--threat-clean]/25",
+};
 ---
 
-<Layout title="virusmore">
-  <div class="container mx-auto max-w-3xl px-4 py-2">
-    <pre class="overflow-x-auto font-mono text-sm text-white">{TITLE_TEXT}</pre>
-    <div class="grid gap-6">
-      <section class="rounded-lg border border-neutral-700 p-4">
-        <h2 class="mb-2 font-medium text-white">API Status</h2>
-        <div class="flex items-center gap-2" id="api-status">
-          <div class="h-2 w-2 rounded-full bg-orange-400" id="status-dot"></div>
-          <span class="text-sm text-neutral-400" id="status-text">Checking...</span>
+<Layout title="VirusMore — AI-powered security analysis">
+  <div class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="h-14 border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50">
+      <div class="max-w-5xl mx-auto h-full px-6 flex items-center justify-between">
+        <div class="flex items-center gap-2.5 text-foreground">
+          <Logo size={20} class="text-primary" />
+          <span class="font-semibold tracking-tight text-[0.95rem]">VirusMore</span>
         </div>
-      </section>
-    </div>
+        <div class="flex items-center gap-4">
+          <a
+            href="https://www.virustotal.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            VirusTotal
+          </a>
+          <button
+            id="theme-toggle"
+            class="h-8 w-8 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+            aria-label="Toggle color theme"
+          >
+            <svg id="icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+            <svg id="icon-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden">
+              <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <main class="flex-1 flex flex-col items-center px-6 pt-20 pb-16">
+      <div class="w-full max-w-[560px] text-center space-y-6">
+
+        <div class="inline-flex items-center gap-2 bg-secondary border border-border rounded-full px-3.5 py-1.5 text-xs text-muted-foreground font-medium">
+          <span class="size-1.5 rounded-full bg-[--threat-clean] shrink-0"></span>
+          Powered by Gemini — VirusTotal API
+        </div>
+
+        <div class="space-y-3">
+          <h1 class="text-4xl sm:text-[2.75rem] font-bold tracking-tight leading-[1.1] text-foreground">
+            Security analysis,<br/>explained by AI
+          </h1>
+          <p class="text-muted-foreground text-base leading-relaxed">
+            Replace <code class="bg-secondary border border-border rounded px-1.5 py-0.5 text-[0.82em] font-mono text-foreground">virustotal.com</code> with
+            <code class="bg-secondary border border-border rounded px-1.5 py-0.5 text-[0.82em] font-mono text-primary">virusmore.com</code> in any VirusTotal URL
+            to get AI-generated documentation and an interactive analysis agent.
+          </p>
+        </div>
+
+        <!-- Search -->
+        <form id="search-form" class="flex gap-2">
+          <input
+            id="search-input"
+            type="text"
+            placeholder="Paste a VirusTotal URL, SHA256 hash, domain or IP..."
+            autocomplete="off"
+            spellcheck="false"
+            class="flex-1 h-10 rounded-lg border border-input bg-secondary px-3.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/20 transition-all font-mono"
+          />
+          <button
+            type="submit"
+            class="h-10 px-4 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors shrink-0 flex items-center gap-1.5"
+          >
+            Analyze
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </button>
+        </form>
+
+        <p class="text-xs text-muted-foreground">Supports files (SHA256/MD5), URLs, domains, and IP addresses.</p>
+      </div>
+
+      <!-- Examples -->
+      <div class="w-full max-w-[560px] mt-14 space-y-2">
+        <p class="text-[0.7rem] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+          Quick examples
+        </p>
+        {examples.map((ex) => (
+          <a
+            href={`/gui/${ex.type}/${ex.id}`}
+            class="group flex items-center justify-between p-3 rounded-lg bg-card border border-border hover:border-primary/50 hover:bg-secondary transition-all no-underline"
+          >
+            <div class="flex items-center gap-3 min-w-0">
+              <span class={`text-[0.65rem] font-semibold border rounded px-1.5 py-0.5 uppercase tracking-wider shrink-0 ${threatVariant[ex.threat]}`}>
+                {ex.threat}
+              </span>
+              <span class="text-sm text-foreground truncate font-mono">{ex.label}</span>
+            </div>
+            <span class="text-xs text-muted-foreground shrink-0 ml-3 capitalize group-hover:text-foreground transition-colors">
+              {ex.type === "ip-address" ? "IP" : ex.type}
+            </span>
+          </a>
+        ))}
+      </div>
+    </main>
+
+    <footer class="border-t border-border py-5">
+      <p class="text-center text-xs text-muted-foreground">
+        VirusMore is not affiliated with VirusTotal or Google LLC.
+        Analysis data is provided by the VirusTotal API.
+      </p>
+    </footer>
   </div>
 </Layout>
 
 <script>
-  import { orpc } from "../lib/orpc";
+  // Theme toggle
+  const btn  = document.getElementById("theme-toggle");
+  const moon = document.getElementById("icon-moon");
+  const sun  = document.getElementById("icon-sun");
 
-  const statusDot = document.getElementById("status-dot")!;
-  const statusText = document.getElementById("status-text")!;
-
-  async function checkHealth() {
-    try {
-      const data = await orpc.healthCheck();
-      statusDot.className = "h-2 w-2 rounded-full bg-green-500";
-      statusText.textContent = "Connected";
-    } catch (error) {
-      statusDot.className = "h-2 w-2 rounded-full bg-red-500";
-      statusText.textContent = "Disconnected";
-    }
+  function syncIcons() {
+    const dark = document.documentElement.classList.contains("dark");
+    moon?.classList.toggle("hidden", dark);
+    sun?.classList.toggle("hidden", !dark);
   }
+  syncIcons();
 
-  checkHealth();
+  btn?.addEventListener("click", () => {
+    const dark = document.documentElement.classList.toggle("dark");
+    localStorage.setItem("theme", dark ? "dark" : "light");
+    syncIcons();
+  });
+
+  // Search routing
+  document.getElementById("search-form")?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const raw = (document.getElementById("search-input") as HTMLInputElement).value.trim();
+    if (!raw) return;
+
+    const vtMatch = raw.match(/virustotal\.com\/gui\/(file|url|domain|ip-address)\/([^/?#]+)/);
+    if (vtMatch) { window.location.href = `/gui/${vtMatch[1]}/${vtMatch[2]}`; return; }
+
+    if (/^[a-fA-F0-9]{64}$/.test(raw)) { window.location.href = `/gui/file/${raw.toLowerCase()}`; return; }
+    if (/^[a-fA-F0-9]{32}$/.test(raw)) { window.location.href = `/gui/file/${raw.toLowerCase()}`; return; }
+    if (/^\d{1,3}(\.\d{1,3}){3}$/.test(raw)) { window.location.href = `/gui/ip-address/${raw}`; return; }
+    if (/^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]?\.[a-zA-Z]{2,}/.test(raw)) { window.location.href = `/gui/domain/${raw}`; return; }
+
+    alert("Input not recognized. Paste a VirusTotal URL or a valid SHA256 hash.");
+  });
 </script>

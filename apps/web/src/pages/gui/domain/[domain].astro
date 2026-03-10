@@ -1,0 +1,8 @@
+---
+import AnalysisPage from "../../../components/AnalysisPage.astro";
+
+const { domain } = Astro.params;
+if (!domain) return Astro.redirect("/");
+---
+
+<AnalysisPage type="domain" id={domain} />

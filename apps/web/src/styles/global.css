@@ -1,8 +1,221 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "@fontsource-variable/geist";
 
-/* Add your theme customizations here. */
-/* See the TailwindCSS v4 docs for more info: https://tailwindcss.com/docs/v4-beta */
+/* ── Dark mode variant ────────────────────────────────────────────────────── */
+@custom-variant dark (&:is(.dark *));
 
-@theme {
-  --font-sans: "Inter", sans-serif;
+/* ── Design tokens ────────────────────────────────────────────────────────── */
+:root {
+  --radius: 0.5rem;
+
+  /* GitHub-style light */
+  --background:           #ffffff;
+  --foreground:           #1f2328;
+  --card:                 #ffffff;
+  --card-foreground:      #1f2328;
+  --popover:              #ffffff;
+  --popover-foreground:   #1f2328;
+  --primary:              #0969da;
+  --primary-foreground:   #ffffff;
+  --secondary:            #f6f8fa;
+  --secondary-foreground: #1f2328;
+  --muted:                #f6f8fa;
+  --muted-foreground:     #656d76;
+  --accent:               #ddf4ff;
+  --accent-foreground:    #0969da;
+  --destructive:          #cf222e;
+  --destructive-foreground: #ffffff;
+  --border:               #d0d7de;
+  --input:                #d0d7de;
+  --ring:                 #0969da;
+
+  --threat-clean:         #1a7f37;
+  --threat-suspicious:    #9a6700;
+  --threat-malicious:     #cf222e;
+}
+
+.dark {
+  /* GitHub-style dark */
+  --background:           #0d1117;
+  --foreground:           #e6edf3;
+  --card:                 #161b22;
+  --card-foreground:      #e6edf3;
+  --popover:              #1c2128;
+  --popover-foreground:   #e6edf3;
+  --primary:              #58a6ff;
+  --primary-foreground:   #0d1117;
+  --secondary:            #21262d;
+  --secondary-foreground: #e6edf3;
+  --muted:                #21262d;
+  --muted-foreground:     #8b949e;
+  --accent:               #1f3147;
+  --accent-foreground:    #58a6ff;
+  --destructive:          #f85149;
+  --destructive-foreground: #0d1117;
+  --border:               #30363d;
+  --input:                #30363d;
+  --ring:                 #58a6ff;
+
+  --threat-clean:         #3fb950;
+  --threat-suspicious:    #d29922;
+  --threat-malicious:     #f85149;
+}
+
+/* ── Tailwind theme mapping ───────────────────────────────────────────────── */
+@theme inline {
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'ui-monospace', 'Cascadia Code', 'Fira Code', monospace;
+
+  --color-background:             var(--background);
+  --color-foreground:             var(--foreground);
+  --color-card:                   var(--card);
+  --color-card-foreground:        var(--card-foreground);
+  --color-popover:                var(--popover);
+  --color-popover-foreground:     var(--popover-foreground);
+  --color-primary:                var(--primary);
+  --color-primary-foreground:     var(--primary-foreground);
+  --color-secondary:              var(--secondary);
+  --color-secondary-foreground:   var(--secondary-foreground);
+  --color-muted:                  var(--muted);
+  --color-muted-foreground:       var(--muted-foreground);
+  --color-accent:                 var(--accent);
+  --color-accent-foreground:      var(--accent-foreground);
+  --color-destructive:            var(--destructive);
+  --color-border:                 var(--border);
+  --color-input:                  var(--input);
+  --color-ring:                   var(--ring);
+  --color-threat-clean:           var(--threat-clean);
+  --color-threat-suspicious:      var(--threat-suspicious);
+  --color-threat-malicious:       var(--threat-malicious);
+
+  --radius-sm:  calc(var(--radius) - 4px);
+  --radius-md:  calc(var(--radius) - 2px);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+}
+
+/* ── Base layer ───────────────────────────────────────────────────────────── */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html {
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-synthesis: none;
+  }
+
+  code, pre, kbd, samp {
+    font-family: var(--font-mono);
+  }
+
+  /* Remove default border from shadcn reset */
+  * {
+    border-color: var(--border);
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-foreground;
+  }
+}
+
+/* ── Markdown / Prose ─────────────────────────────────────────────────────── */
+.prose {
+  color: var(--foreground);
+  max-width: none;
+}
+
+.prose h1 {
+  @apply text-2xl font-bold tracking-tight mt-6 mb-3 text-foreground;
+}
+.prose h2 {
+  @apply text-xl font-semibold mt-6 mb-2 pb-2 border-b border-border text-foreground;
+}
+.prose h3 {
+  @apply text-base font-semibold mt-5 mb-1.5 text-foreground;
+}
+.prose p {
+  @apply my-3 leading-7 text-foreground;
+}
+.prose ul, .prose ol {
+  @apply pl-6 my-2;
+}
+.prose li {
+  @apply my-1 leading-7 text-foreground;
+}
+.prose code {
+  @apply bg-secondary text-foreground border border-border rounded px-1.5 py-0.5 text-[0.85em] font-mono;
+}
+.prose pre {
+  @apply bg-secondary border border-border rounded-lg p-4 overflow-x-auto my-4;
+}
+.prose pre code {
+  @apply bg-transparent border-none p-0 text-sm;
+}
+.prose table {
+  @apply w-full border-collapse my-4 text-sm;
+}
+.prose th {
+  @apply bg-muted text-foreground font-semibold text-left px-3 py-2 border border-border;
+}
+.prose td {
+  @apply px-3 py-2 border border-border text-foreground;
+}
+.prose blockquote {
+  @apply border-l-4 border-primary/50 pl-4 my-4 bg-accent/30 rounded-r-md;
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+.prose a {
+  @apply text-primary underline-offset-4 hover:underline;
+}
+.prose strong {
+  @apply font-semibold text-foreground;
+}
+.prose em {
+  @apply italic;
+}
+.prose hr {
+  @apply border-t border-border my-6;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background-color: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background-color: var(--muted-foreground); }
+
+/* ── Skeleton animation ───────────────────────────────────────────────────── */
+@keyframes skeleton-wave {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+.skeleton {
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--muted) 25%,
+    var(--border) 50%,
+    var(--muted) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-wave 1.5s ease-in-out infinite;
+}
+
+/* ── Cursor blink (streaming) ─────────────────────────────────────────────── */
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.cursor-blink {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: currentColor;
+  vertical-align: text-bottom;
+  margin-left: 1px;
+  animation: blink 1s step-end infinite;
 }
