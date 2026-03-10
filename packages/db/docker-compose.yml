@@ -1,0 +1,23 @@
+name: virusmore
+
+services:
+  postgres:
+    image: postgres
+    container_name: virusmore-postgres
+    environment:
+      POSTGRES_DB: virusmore
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - virusmore_postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  virusmore_postgres_data:

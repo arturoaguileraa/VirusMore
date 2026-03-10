@@ -1,0 +1,27 @@
+{
+  "name": "web",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/node": "^9.5.2",
+    "@orpc/client": "catalog:",
+    "@virusmore/api": "workspace:*",
+    "@virusmore/env": "workspace:*",
+    "astro": "^5.16.11",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "@virusmore/config": "workspace:*",
+    "tailwindcss": "^4.1.18",
+    "typescript": "catalog:"
+  }
+}
