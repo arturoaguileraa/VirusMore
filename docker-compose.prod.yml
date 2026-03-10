@@ -1,0 +1,88 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: virusmore
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d virusmore"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+
+  server:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/virusmore
+      CORS_ORIGIN: https://virusmore.com
+      VIRUSTOTAL_API_KEY: ${VIRUSTOTAL_API_KEY}
+      GOOGLE_GENERATIVE_AI_API_KEY: ${GOOGLE_GENERATIVE_AI_API_KEY}
+    networks:
+      - internal
+      - dokploy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.virusmore-api.rule=Host(`api.virusmore.com`)"
+      - "traefik.http.routers.virusmore-api.entrypoints=websecure"
+      - "traefik.http.routers.virusmore-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.virusmore-api.loadbalancer.server.port=3000"
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        PUBLIC_SERVER_URL: https://api.virusmore.com
+    restart: unless-stopped
+    depends_on:
+      - server
+    environment:
+      NODE_ENV: production
+      PUBLIC_SERVER_URL: https://api.virusmore.com
+    networks:
+      - dokploy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.virusmore-web.rule=Host(`virusmore.com`) || Host(`www.virusmore.com`)"
+      - "traefik.http.routers.virusmore-web.entrypoints=websecure"
+      - "traefik.http.routers.virusmore-web.tls.certresolver=letsencrypt"
+      - "traefik.http.services.virusmore-web.loadbalancer.server.port=4321"
+      # Redirect www → apex
+      - "traefik.http.middlewares.virusmore-www.redirectregex.regex=^https://www\\.virusmore\\.com/(.*)"
+      - "traefik.http.middlewares.virusmore-www.redirectregex.replacement=https://virusmore.com/$${1}"
+      - "traefik.http.middlewares.virusmore-www.redirectregex.permanent=true"
+      - "traefik.http.routers.virusmore-web.middlewares=virusmore-www"
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+
+volumes:
+  postgres_data:
+
+networks:
+  internal:
+    internal: true
+  dokploy-network:
+    external: true
