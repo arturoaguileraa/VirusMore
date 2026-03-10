@@ -24,7 +24,7 @@ jobs:
             docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
             # Run pending DB migrations
-            docker compose -f docker-compose.prod.yml exec -T server bun run db:migrate
+            docker compose -f docker-compose.prod.yml exec -T server bun migrate.ts
 
             # Clean up unused images
             docker image prune -f
