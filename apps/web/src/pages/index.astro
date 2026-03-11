@@ -31,10 +31,10 @@ const threatStyle: Record<string, string> = {
 ---
 
 <Layout title="VirusMore — AI-powered security analysis">
-  <div class="h-screen overflow-hidden flex flex-col">
+  <div class="flex flex-col min-h-screen sm:h-screen">
 
     <!-- Header -->
-    <header class="h-14 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50">
+    <header class="h-14 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-[10000] shrink-0">
       <div class="max-w-5xl mx-auto h-full px-6 flex items-center justify-between">
         <div class="flex items-center gap-2.5 text-foreground">
           <Logo size={32} class="text-primary" />
@@ -69,23 +69,23 @@ const threatStyle: Record<string, string> = {
     </header>
 
     <!-- Hero -->
-    <main class="flex-1 flex flex-col items-center justify-center px-6 relative overflow-hidden">
+    <main class="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-10 sm:py-0 relative overflow-hidden overflow-y-auto sm:overflow-hidden">
 
       <!-- Gradient orbs -->
       <div class="orb w-[600px] h-[400px] top-[-80px] left-1/2 -translate-x-1/2" style="background: radial-gradient(ellipse, rgba(129,140,248,0.18) 0%, transparent 70%);"></div>
       <div class="orb w-[350px] h-[350px] top-[10%] left-[10%]" style="background: radial-gradient(ellipse, rgba(6,182,212,0.12) 0%, transparent 70%);"></div>
       <div class="orb w-[300px] h-[300px] top-[15%] right-[8%]" style="background: radial-gradient(ellipse, rgba(52,211,153,0.10) 0%, transparent 70%);"></div>
 
-      <div class="w-full max-w-[760px] text-center space-y-7 relative z-10">
+      <div class="w-full max-w-[760px] text-center space-y-5 sm:space-y-7 relative z-10">
 
         <!-- Browser chrome + URL bar demo -->
-        <div class="browser-chrome">
+        <div class="browser-chrome hidden sm:flex">
           <!-- Traffic lights + nav -->
           <div class="browser-chrome-left">
             <span class="traffic-dot" style="background:#ff5f57;"></span>
             <span class="traffic-dot" style="background:#ffbd2e;"></span>
             <span class="traffic-dot" style="background:#28c940;"></span>
-            <div class="nav-btns">
+            <div class="nav-btns hidden sm:flex">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
@@ -103,23 +103,23 @@ const threatStyle: Record<string, string> = {
 
         <!-- Headline -->
         <div class="space-y-2">
-          <h1 class="text-5xl sm:text-6xl font-bold tracking-tight leading-[1.08]">
+          <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.08]">
             Threat intel,
           </h1>
-          <h1 class="text-5xl sm:text-6xl font-bold tracking-tight leading-[1.08] gradient-text">
+          <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.08] gradient-text">
             explained by AI.
           </h1>
         </div>
 
         <!-- Subtext -->
-        <p class="text-muted-foreground text-lg leading-relaxed max-w-[480px] mx-auto">
+        <p class="text-muted-foreground text-base sm:text-lg leading-relaxed max-w-[480px] mx-auto">
           Replace <code class="rounded px-1.5 py-0.5 text-[0.82em] font-mono" style="background: var(--secondary); border: 1px solid var(--border); color: var(--foreground);">virustotal.com</code> with
           <code class="rounded px-1.5 py-0.5 text-[0.82em] font-mono" style="background: color-mix(in srgb, var(--primary) 10%, transparent); border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent); color: var(--primary);">virusmore.com</code>
           in any VirusTotal URL to get AI documentation and an interactive analysis agent.
         </p>
 
         <!-- Search -->
-        <form id="search-form" class="flex gap-2 mt-2">
+        <form id="search-form" class="flex flex-col sm:flex-row gap-2 mt-2">
           <div class="flex-1 relative">
             <div class="absolute inset-0 rounded-xl pointer-events-none" style="background: linear-gradient(135deg, rgba(129,140,248,0.15), rgba(6,182,212,0.08)); padding: 1px;">
             </div>
@@ -135,7 +135,7 @@ const threatStyle: Record<string, string> = {
           </div>
           <button
             type="submit"
-            class="h-11 px-5 rounded-xl text-sm font-semibold shrink-0 flex items-center gap-2 transition-all hover:opacity-90"
+            class="h-11 px-5 rounded-xl text-sm font-semibold shrink-0 flex items-center justify-center gap-2 transition-all hover:opacity-90"
             style="background: var(--primary); color: var(--primary-foreground);"
           >
             Analyze
@@ -153,7 +153,7 @@ const threatStyle: Record<string, string> = {
         <p class="text-[0.62rem] font-semibold uppercase tracking-widest text-muted-foreground mb-3 px-1">
           Quick examples
         </p>
-        <div class="grid grid-cols-3 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {examples.map((ex) => (
             <a
               href={`/gui/${ex.type}/${ex.id}`}
@@ -184,7 +184,7 @@ const threatStyle: Record<string, string> = {
       <!-- Powered by -->
       <div class="flex flex-col items-center gap-3 mt-12 relative z-10 opacity-60">
         <span class="text-[0.6rem] font-semibold uppercase tracking-widest text-muted-foreground">Powered by</span>
-        <div class="flex items-center gap-8">
+        <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 px-4">
           <img src="/virustotal.png" alt="VirusTotal" class="h-9 w-auto" style="filter: brightness(0) invert(0.4);" />
           <img src="/gemini.png"     alt="Gemini"     class="h-9 w-auto" style="filter: brightness(0) invert(0.4);" />
         </div>
