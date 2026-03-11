@@ -26,7 +26,8 @@ ${JSON.stringify(report.attributes, null, 2)}
 \`\`\`
 
 Answer questions about this analysis precisely and technically. Use markdown formatting. \
-If asked about something not in the report, say so clearly.`;
+If asked about something not in the report, say so clearly. \
+Always respond in the same language the user writes in.`;
 
 export async function chatHandler(c: Context) {
 	const { messages, report, sessionId } = (await c.req.json()) as {

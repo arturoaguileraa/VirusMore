@@ -1,7 +1,7 @@
 "use client";
 import { useChat } from "@ai-sdk/react";
 import type { VTReport } from "@virusmore/api/types";
-import { Bot, Loader2, Send, X } from "lucide-react";
+import { Loader2, Send, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -198,24 +198,12 @@ export function ChatAgent({ report, serverUrl }: Props) {
 										</div>
 									</div>
 								) : (
-									/* Assistant: clean text, no bubble */
-									<div className="flex items-start gap-3">
-										<div
-											className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full"
-											style={{
-												background:
-													"linear-gradient(135deg, rgba(129,140,248,0.2), rgba(56,189,248,0.15))",
-												border: "1px solid rgba(129,140,248,0.3)",
-											}}
-										>
-											<Bot className="size-2.5" style={{ color: "#818cf8" }} />
-										</div>
-										<div className="min-w-0 flex-1 text-foreground text-sm leading-relaxed">
-											<div className="prose prose-sm max-w-none [&_code]:text-xs [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_p]:my-1.5">
-												<ReactMarkdown remarkPlugins={[remarkGfm]}>
-													{m.content}
-												</ReactMarkdown>
-											</div>
+									/* Assistant: clean text, no bubble, no icon */
+									<div className="text-foreground text-sm leading-relaxed">
+										<div className="prose prose-sm max-w-none [&_code]:text-xs [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_p]:my-1.5">
+											<ReactMarkdown remarkPlugins={[remarkGfm]}>
+												{m.content}
+											</ReactMarkdown>
 										</div>
 									</div>
 								)}
@@ -223,31 +211,10 @@ export function ChatAgent({ report, serverUrl }: Props) {
 						))}
 
 						{isLoading && (
-							<div className="flex items-center gap-3">
-								<div
-									className="flex size-5 shrink-0 items-center justify-center rounded-full"
-									style={{
-										background:
-											"linear-gradient(135deg, rgba(129,140,248,0.2), rgba(56,189,248,0.15))",
-										border: "1px solid rgba(129,140,248,0.3)",
-									}}
-								>
-									<Bot className="size-2.5" style={{ color: "#818cf8" }} />
-								</div>
-								<div className="flex gap-1">
-									<span
-										className="size-1.5 animate-bounce rounded-full bg-muted-foreground"
-										style={{ animationDelay: "0ms" }}
-									/>
-									<span
-										className="size-1.5 animate-bounce rounded-full bg-muted-foreground"
-										style={{ animationDelay: "150ms" }}
-									/>
-									<span
-										className="size-1.5 animate-bounce rounded-full bg-muted-foreground"
-										style={{ animationDelay: "300ms" }}
-									/>
-								</div>
+							<div className="space-y-2 py-1">
+								<div className="skeleton h-3 w-4/5 rounded" />
+								<div className="skeleton h-3 w-3/5 rounded" />
+								<div className="skeleton h-3 w-2/3 rounded" />
 							</div>
 						)}
 						<div ref={bottomRef} />
