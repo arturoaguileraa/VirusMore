@@ -78,6 +78,9 @@ export function ChatAgent({ report, serverUrl }: Props) {
 							backdropFilter: "blur(12px)",
 							WebkitBackdropFilter: "blur(12px)",
 							borderColor: "var(--border)",
+							boxShadow:
+								"0 0 0 1px var(--border), 0 0 24px color-mix(in srgb, var(--primary) 45%, transparent), 0 0 64px color-mix(in srgb, var(--primary) 25%, transparent)",
+							animation: "chat-bar-glow 2.5s ease-in-out infinite",
 						}}
 						onSubmit={(e) => {
 							e.preventDefault();
