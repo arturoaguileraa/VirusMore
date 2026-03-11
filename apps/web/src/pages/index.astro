@@ -126,32 +126,36 @@ const threatStyle: Record<string, string> = {
       </div>
 
       <!-- Examples -->
-      <div class="w-full max-w-[600px] mt-10 space-y-2 relative z-10">
-        <p class="text-[0.68rem] font-semibold uppercase tracking-widest text-muted-foreground mb-4 px-1">
+      <div class="w-full max-w-[780px] mt-10 relative z-10">
+        <p class="text-[0.62rem] font-semibold uppercase tracking-widest text-muted-foreground mb-3 px-1">
           Quick examples
         </p>
-        {examples.map((ex) => (
-          <a
-            href={`/gui/${ex.type}/${ex.id}`}
-            class="group flex items-center justify-between p-3.5 rounded-xl no-underline transition-all"
-            style="background: var(--card); border: 1px solid var(--border);"
-          >
-            <div class="flex items-center gap-3 min-w-0">
-              <span class="text-[0.6rem] font-bold border rounded-md px-1.5 py-0.5 uppercase tracking-wider shrink-0" style={threatStyle[ex.threat]}>
-                {ex.threat}
+        <div class="grid grid-cols-3 gap-3">
+          {examples.map((ex) => (
+            <a
+              href={`/gui/${ex.type}/${ex.id}`}
+              class="group flex flex-col gap-2.5 p-4 rounded-2xl no-underline transition-all hover:scale-[1.02] min-w-0"
+              style="background: var(--card); border: 1px solid var(--border);"
+            >
+              <div class="flex items-center justify-between">
+                <span class="text-[0.58rem] font-bold border rounded px-1.5 py-0.5 uppercase tracking-wider shrink-0" style={threatStyle[ex.threat]}>
+                  {ex.threat}
+                </span>
+                <span class="text-[0.62rem] text-muted-foreground capitalize">
+                  {ex.type === "ip-address" ? "IP" : ex.type}
+                </span>
+              </div>
+              <span class="text-xs text-foreground font-mono truncate block">
+                {ex.label}
               </span>
-              <span class="text-sm text-foreground truncate font-mono">{ex.label}</span>
-            </div>
-            <div class="flex items-center gap-2 shrink-0 ml-3">
-              <span class="text-xs text-muted-foreground capitalize group-hover:text-foreground transition-colors">
-                {ex.type === "ip-address" ? "IP" : ex.type}
-              </span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted-foreground group-hover:text-foreground transition-all group-hover:translate-x-0.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-              </svg>
-            </div>
-          </a>
-        ))}
+              <div class="flex justify-end mt-auto">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                </svg>
+              </div>
+            </a>
+          ))}
+        </div>
       </div>
 
       <!-- Powered by -->
