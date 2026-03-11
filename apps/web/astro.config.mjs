@@ -15,6 +15,11 @@ export default defineConfig({
 				context: "client",
 				default: "http://localhost:3000",
 			}),
+			SERVER_URL: envField.string({
+				access: "secret",
+				context: "server",
+				optional: true,
+			}),
 		},
 	},
 	vite: {

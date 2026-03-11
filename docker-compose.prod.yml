@@ -55,6 +55,7 @@ services:
     environment:
       NODE_ENV: production
       PUBLIC_SERVER_URL: https://api.virusmore.com
+      SERVER_URL: http://server:3000
     ports:
       - "4321:4321"
     networks:
