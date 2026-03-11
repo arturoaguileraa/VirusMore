@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="dot-glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <radialGradient id="bg-glow" cx="40%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#1e1040" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#09090f" stop-opacity="1"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg-glow)"/>
+  <!-- Subtle orb -->
+  <circle cx="380" cy="315" r="280" fill="#818cf8" opacity="0.07"/>
+  <circle cx="380" cy="315" r="180" fill="#22d3ee" opacity="0.05"/>
+
+  <!-- Shield -->
+  <g transform="translate(120, 95) scale(4.4)">
+    <path d="M50 3 C50 3 86 12 92 16 C98 20 97 28 97 34 L97 66 C97 89 74 104 50 113 C26 104 3 89 3 66 L3 34 C3 28 2 20 8 16 C14 12 50 3 50 3 Z" fill="#1e3a5f" stroke="#22d3ee" stroke-width="1.2" stroke-opacity="0.4"/>
+    <path d="M12 60 L24 60 L33 78 L47 28 C51 28 54 48 58 48 C62 48 65 26 70 26 C74 26 77 60 83 60" fill="none" stroke="#22d3ee" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="83" cy="60" r="14" fill="#22d3ee" opacity="0.12"/>
+    <circle cx="83" cy="60" r="9.5" fill="#22d3ee" opacity="0.22"/>
+    <circle cx="83" cy="60" r="5.5" fill="#22d3ee" filter="url(#dot-glow)"/>
+  </g>
+
+  <!-- Text -->
+  <text x="620" y="265" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" letter-spacing="-2" fill="#e8e8f5">VirusMore</text>
+  <text x="622" y="345" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="400" fill="#6b7180">AI-powered security analysis</text>
+
+  <!-- Divider -->
+  <line x1="620" y1="375" x2="920" y2="375" stroke="#1e1e32" stroke-width="1.5"/>
+
+  <!-- Tags -->
+  <rect x="620" y="398" width="110" height="34" rx="17" fill="#1e1e32" stroke="#818cf8" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="675" y="421" font-family="system-ui" font-size="14" font-weight="600" fill="#818cf8" text-anchor="middle">VirusTotal</text>
+
+  <rect x="742" y="398" width="96" height="34" rx="17" fill="#1e1e32" stroke="#22d3ee" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="790" y="421" font-family="system-ui" font-size="14" font-weight="600" fill="#22d3ee" text-anchor="middle">Gemini AI</text>
+
+  <rect x="850" y="398" width="86" height="34" rx="17" fill="#1e1e32" stroke="#34d399" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="893" y="421" font-family="system-ui" font-size="14" font-weight="600" fill="#34d399" text-anchor="middle">Free</text>
+
+  <!-- URL -->
+  <text x="620" y="510" font-family="ui-monospace, monospace" font-size="22" fill="#6b7180">virusmore.com</text>
+</svg>

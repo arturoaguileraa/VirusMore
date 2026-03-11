@@ -9,14 +9,42 @@ const { size = 22, class: className = "" } = Astro.props;
   xmlns="http://www.w3.org/2000/svg"
   width={size}
   height={size}
-  viewBox="0 0 24 24"
-  fill="currentColor"
+  viewBox="0 0 100 115"
   class={className}
   aria-hidden="true"
 >
+  <defs>
+    <filter id="dot-glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Shield — wider -->
   <path
-    fill-rule="evenodd"
-    d="M2.5 3h19v18h-19l8.966-9L2.5 3Zm3.608 1.5L13.58 12l-7.472 7.5h13.897v-15H6.108Z"
-    clip-rule="evenodd"
+    d="M50 3 C50 3 86 12 92 16 C98 20 97 28 97 34 L97 66 C97 89 74 104 50 113 C26 104 3 89 3 66 L3 34 C3 28 2 20 8 16 C14 12 50 3 50 3 Z"
+    fill="#1e3a5f"
+    stroke="#22d3ee"
+    stroke-width="1.2"
+    stroke-opacity="0.25"
   />
+
+  <!-- ECG: flat — V spike — M double peak — dot (kept inside shield) -->
+  <path
+    d="M12 60 L24 60 L33 78 L47 28 C51 28 54 48 58 48 C62 48 65 26 70 26 C74 26 77 60 83 60"
+    fill="none"
+    stroke="#22d3ee"
+    stroke-width="6.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Dot glow -->
+  <circle cx="83" cy="60" r="14" fill="#22d3ee" opacity="0.10"/>
+  <circle cx="83" cy="60" r="9.5" fill="#22d3ee" opacity="0.20"/>
+  <circle cx="83" cy="60" r="5.5" fill="#22d3ee" filter="url(#dot-glow)"/>
 </svg>
