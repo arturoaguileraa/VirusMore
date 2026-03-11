@@ -1,7 +1,7 @@
 "use client";
 import { useChat } from "@ai-sdk/react";
 import type { VTReport } from "@virusmore/api/types";
-import { Loader2, Send, X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -95,13 +95,26 @@ export function ChatAgent({ report, serverUrl }: Props) {
 						<button
 							type="submit"
 							disabled={!barInput.trim()}
-							className="flex size-8 items-center justify-center rounded-xl transition-all disabled:opacity-30"
+							className="flex size-8 items-center justify-center rounded-full transition-all disabled:opacity-30"
 							style={{
-								background: "linear-gradient(135deg, #818cf8, #38bdf8)",
-								color: "#09090f",
+								background: "var(--muted-foreground)",
+								color: "#ffffff",
 							}}
 						>
-							<Send className="size-3.5" />
+							<svg
+								aria-label="Send"
+								width="14"
+								height="14"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2.5"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							>
+								<line x1="5" y1="12" x2="19" y2="12" />
+								<polyline points="12 5 19 12 12 19" />
+							</svg>
 						</button>
 					</form>
 				</div>
@@ -184,14 +197,13 @@ export function ChatAgent({ report, serverUrl }: Props) {
 						{messages.map((m) => (
 							<div key={m.id}>
 								{m.role === "user" ? (
-									/* User: compact pill aligned right */
+									/* User: dark rounded bubble */
 									<div className="flex justify-end">
 										<div
-											className="max-w-[78%] rounded-2xl px-4 py-2 text-sm leading-relaxed"
+											className="max-w-[78%] px-4 py-2.5 text-foreground text-sm leading-relaxed"
 											style={{
-												background: "linear-gradient(135deg, #818cf8, #38bdf8)",
-												color: "#09090f",
-												fontWeight: 500,
+												background: "var(--secondary)",
+												borderRadius: "18px 18px 4px 18px",
 											}}
 										>
 											{m.content}
@@ -244,16 +256,29 @@ export function ChatAgent({ report, serverUrl }: Props) {
 						<button
 							type="submit"
 							disabled={isLoading || !input.trim()}
-							className="flex size-8 items-center justify-center rounded-xl transition-all disabled:opacity-30"
+							className="flex size-8 items-center justify-center rounded-full transition-all disabled:opacity-30"
 							style={{
-								background: "linear-gradient(135deg, #818cf8, #38bdf8)",
-								color: "#09090f",
+								background: "var(--muted-foreground)",
+								color: "#ffffff",
 							}}
 						>
 							{isLoading ? (
 								<Loader2 className="size-3.5 animate-spin" />
 							) : (
-								<Send className="size-3.5" />
+								<svg
+									aria-label="Send"
+									width="14"
+									height="14"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth="2.5"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+								>
+									<line x1="5" y1="12" x2="19" y2="12" />
+									<polyline points="12 5 19 12 12 19" />
+								</svg>
 							)}
 						</button>
 					</form>
