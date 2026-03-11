@@ -29,7 +29,7 @@ COPY packages/api/package.json ./packages/api/
 COPY packages/db/package.json ./packages/db/
 COPY packages/env/package.json ./packages/env/
 COPY packages/config/package.json ./packages/config/
-RUN bun install --production --frozen-lockfile
+RUN bun install --production
 
 COPY --from=build /app/apps/server/dist ./dist
 COPY --from=build /app/apps/server/src/migrate.ts ./migrate.ts
