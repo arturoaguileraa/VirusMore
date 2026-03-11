@@ -197,6 +197,36 @@ const threatStyle: Record<string, string> = {
       </p>
     </footer>
   </div>
+
+  <!-- Animated mouse cursor (fixed, pointer-events none) -->
+  <div id="demo-mouse" style="position:fixed;pointer-events:none;z-index:9999;opacity:0;">
+
+    <!-- macOS arrow cursor — black fill, white rounded border -->
+    <svg id="demo-mouse-arrow" width="28" height="32" viewBox="0 0 28 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M4 2 L4 24 L9 18.5 L13 27.5 L16.5 26 L12.5 17 L21 17 Z"
+        fill="#0d0d0d"
+        stroke="white"
+        stroke-width="3"
+        stroke-linejoin="round"
+        stroke-linecap="round"
+        paint-order="stroke fill"
+      />
+    </svg>
+
+    <!-- macOS I-beam — narrow arcs, stem doesn't touch arcs (hotspot = 5,13) -->
+    <svg id="demo-mouse-ibeam" width="7" height="18" viewBox="0 0 10 26" fill="none" style="display:none;" xmlns="http://www.w3.org/2000/svg">
+      <!-- white border (painted first) — stem uses butt so it doesn't bleed past the bars -->
+      <line x1="5" y1="5"  x2="5" y2="21" stroke="white"   stroke-width="2.8" stroke-linecap="butt"/>
+      <line x1="2" y1="5"  x2="8" y2="5"  stroke="white"   stroke-width="3"   stroke-linecap="square"/>
+      <line x1="2" y1="21" x2="8" y2="21" stroke="white"   stroke-width="3"   stroke-linecap="square"/>
+      <!-- black on top -->
+      <line x1="5" y1="5"  x2="5" y2="21" stroke="#0d0d0d" stroke-width="1.5" stroke-linecap="butt"/>
+      <line x1="2" y1="5"  x2="8" y2="5"  stroke="#0d0d0d" stroke-width="1.5" stroke-linecap="square"/>
+      <line x1="2" y1="21" x2="8" y2="21" stroke="#0d0d0d" stroke-width="1.5" stroke-linecap="square"/>
+    </svg>
+
+  </div>
 </Layout>
 
 
@@ -312,6 +342,15 @@ const threatStyle: Record<string, string> = {
     0%, 100% { opacity: 1; }
     50%       { opacity: 0; }
   }
+
+  @keyframes demo-mouse-click {
+    0%   { transform: scale(1);    }
+    35%  { transform: scale(0.72); }
+    100% { transform: scale(1);    }
+  }
+  #demo-mouse.clicking {
+    animation: demo-mouse-click 0.18s ease-out forwards;
+  }
 </style>
 
 
@@ -378,6 +417,9 @@ const threatStyle: Record<string, string> = {
   const bar      = document.querySelector(".url-demo-bar")    as HTMLElement;
   const hostEl   = document.getElementById("url-host")        as HTMLSpanElement;
   const cursorEl = document.getElementById("url-cursor")      as HTMLSpanElement;
+  const mouseEl    = document.getElementById("demo-mouse")       as HTMLElement;
+  const arrowSvg   = document.getElementById("demo-mouse-arrow") as HTMLElement;
+  const ibeamSvg   = document.getElementById("demo-mouse-ibeam") as HTMLElement;
 
   function sleep(ms: number) {
     return new Promise<void>((r) => setTimeout(r, ms));
@@ -385,25 +427,73 @@ const threatStyle: Record<string, string> = {
 
   async function runUrlDemo() {
     while (true) {
-      /* ── Reset: virustotal ── */
+      /* ── Reset ── */
+      mouseEl.style.transition = "none";
+      mouseEl.style.opacity    = "0";
+      mouseEl.classList.remove("clicking");
+      arrowSvg.style.display = "";
+      ibeamSvg.style.display = "none";
       hostEl.textContent = "virustotal";
       hostEl.classList.remove("vm");
       bar.classList.remove("focused", "vm");
       cursorEl.classList.remove("active");
       cursorEl.style.opacity = "0";
 
-      await sleep(2000);
+      await sleep(1800);
 
-      /* ── Focus ── */
+      /* ── Place cursor (arrow) off to the bottom-right of the click target ── */
+      const rect   = hostEl.getBoundingClientRect();
+      // arrow: tip at (4, 2) in 28×32 SVG
+      const arrowX = rect.right - 4;
+      const arrowY = rect.top + rect.height / 2 - 2;
+      // i-beam: hotspot at center (3.5, 9) in 7×18 rendered
+      const ibeamX = rect.right - 3.5;
+      const ibeamY = rect.top + rect.height / 2 - 9;
+
+      arrowSvg.style.display = "";
+      ibeamSvg.style.display = "none";
+
+      // Instant reposition (no transition) — force reflow so browser commits it
+      mouseEl.style.transition = "none";
+      mouseEl.style.left    = `${arrowX + 65}px`;
+      mouseEl.style.top     = `${arrowY + 55}px`;
+      mouseEl.style.opacity = "0";
+      void mouseEl.getBoundingClientRect(); // force reflow
+
+      /* ── Glide arrow toward target ── */
+      mouseEl.style.transition = "left 0.52s cubic-bezier(0.22,1,0.36,1), top 0.52s cubic-bezier(0.22,1,0.36,1), opacity 0.2s";
+      mouseEl.style.opacity = "1";
+      mouseEl.style.left = `${arrowX}px`;
+      mouseEl.style.top  = `${arrowY}px`;
+
+      await sleep(280); // midway — swap to I-beam
+
+      arrowSvg.style.display = "none";
+      ibeamSvg.style.display = "";
+      // Instant hotspot adjust + finish glide
+      mouseEl.style.transition = "left 0.26s cubic-bezier(0.22,1,0.36,1), top 0.26s cubic-bezier(0.22,1,0.36,1)";
+      mouseEl.style.left = `${ibeamX}px`;
+      mouseEl.style.top  = `${ibeamY}px`;
+
+      await sleep(290);
+
+      /* ── Click ── */
+      mouseEl.classList.add("clicking");
       bar.classList.add("focused");
 
-      await sleep(500);
+      await sleep(190);
+      mouseEl.classList.remove("clicking");
 
-      /* ── Cursor appears ── */
+      await sleep(120);
+
+      /* ── Mouse fades out, text cursor appears ── */
+      mouseEl.style.transition = "opacity 0.25s";
+      mouseEl.style.opacity    = "0";
+
       cursorEl.style.opacity = "1";
       cursorEl.classList.add("active");
 
-      await sleep(350);
+      await sleep(320);
 
       /* ── Delete "virustotal" ── */
       let text = "virustotal";
@@ -425,14 +515,13 @@ const threatStyle: Record<string, string> = {
 
       await sleep(300);
 
-      /* ── "Enter": cursor off, host turns primary, bar unfocuses ── */
+      /* ── "Enter": cursor off, host turns primary ── */
       cursorEl.classList.remove("active");
       cursorEl.style.opacity = "0";
       hostEl.classList.add("vm");
       bar.classList.remove("focused");
       bar.classList.add("vm");
 
-      /* ── Hold on virusmore state ── */
       await sleep(3000);
     }
   }
