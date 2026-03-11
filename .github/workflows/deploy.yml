@@ -25,7 +25,7 @@ jobs:
 
             # Run pending DB migrations
             sleep 5
-            docker compose -f docker-compose.prod.yml exec -T server bun migrate.ts || true
+            docker compose -f docker-compose.prod.yml exec -T server bun apps/server/migrate.ts || true
 
             # Clean up unused images
             docker image prune -f

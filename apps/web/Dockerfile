@@ -25,11 +25,8 @@ RUN cd apps/web && bun run build
 FROM oven/bun:1.3.5-slim AS runner
 WORKDIR /app
 
-ENV NODE_ENV=production
-ENV HOST=0.0.0.0
-ENV PORT=4321
-
 COPY package.json bun.lock ./
+COPY apps/server/package.json ./apps/server/
 COPY apps/web/package.json ./apps/web/
 COPY packages/api/package.json ./packages/api/
 COPY packages/db/package.json ./packages/db/
@@ -37,8 +34,12 @@ COPY packages/env/package.json ./packages/env/
 COPY packages/config/package.json ./packages/config/
 RUN bun install --production
 
-COPY --from=build /app/apps/web/dist ./dist
+ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV PORT=4321
+
+COPY --from=build /app/apps/web/dist ./apps/web/dist
 
 EXPOSE 4321
 
-CMD ["bun", "run", "./dist/server/entry.mjs"]
+CMD ["bun", "run", "apps/web/dist/server/entry.mjs"]
