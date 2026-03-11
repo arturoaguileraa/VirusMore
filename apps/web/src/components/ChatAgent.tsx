@@ -1,13 +1,10 @@
 "use client";
 import { useChat } from "@ai-sdk/react";
 import type { VTReport } from "@virusmore/api/types";
-import { Bot, Loader2, MessageSquare, Send, User, X } from "lucide-react";
+import { Bot, Loader2, Send, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -34,62 +31,100 @@ const SUGGESTIONS = [
 
 export function ChatAgent({ report, serverUrl }: Props) {
 	const [isOpen, setIsOpen] = useState(false);
+	const [barInput, setBarInput] = useState("");
 	const sessionId = useRef(getSessionId());
 	const bottomRef = useRef<HTMLDivElement>(null);
 
-	const { messages, handleSubmit, status, input, setInput } = useChat({
+	const { messages, append, status, input, setInput, handleSubmit } = useChat({
 		api: `${serverUrl}/api/chat`,
 		body: { report, sessionId: sessionId.current },
 		streamProtocol: "data",
 	});
 
-	const _messageCount = messages.length;
+	const isLoading = status === "streaming" || status === "submitted";
+
+	// Shift main content when panel opens/closes
+	useEffect(() => {
+		const main = document.getElementById("analysis-main");
+		if (main) main.style.marginRight = isOpen ? "50%" : "0";
+		return () => {
+			if (main) main.style.marginRight = "0";
+		};
+	}, [isOpen]);
+
+	// Scroll to bottom on new messages
 	useEffect(() => {
 		bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-	}, []);
+	}, [messages.length]);
 
-	const isLoading = status === "streaming" || status === "submitted";
+	const sendMessage = async (text: string) => {
+		if (!text.trim() || isLoading) return;
+		if (!isOpen) setIsOpen(true);
+		await append({ role: "user", content: text });
+	};
 
 	return (
 		<>
-			{/* Trigger */}
+			{/* ── Sticky bottom input bar (visible when panel is closed) ── */}
 			{!isOpen && (
-				<button
-					type="button"
-					onClick={() => setIsOpen(true)}
-					className="fixed right-6 bottom-6 z-50 flex h-10 items-center gap-2 rounded-full px-5 font-semibold text-sm shadow-lg transition-all hover:opacity-90"
-					style={{
-						background: "linear-gradient(135deg, #818cf8, #38bdf8)",
-						color: "#09090f",
-						boxShadow: "0 0 20px rgba(129,140,248,0.3)",
-					}}
+				<div
+					className="fixed right-0 bottom-0 left-0 z-40 px-6 pt-10 pb-5"
+					style={{ background: "transparent" }}
 				>
-					<MessageSquare className="size-4" />
-					Ask AI
-				</button>
+					<form
+						className="mx-auto flex max-w-2xl items-center gap-2 rounded-2xl border px-4 py-3"
+						style={{
+							background: "color-mix(in srgb, var(--card) 70%, transparent)",
+							backdropFilter: "blur(12px)",
+							WebkitBackdropFilter: "blur(12px)",
+							borderColor: "var(--border)",
+						}}
+						onSubmit={(e) => {
+							e.preventDefault();
+							sendMessage(barInput);
+							setBarInput("");
+						}}
+					>
+						<input
+							value={barInput}
+							onChange={(e) => setBarInput(e.target.value)}
+							placeholder={`Ask about this ${report.type} analysis…`}
+							autoComplete="off"
+							className="flex-1 bg-transparent text-foreground text-sm outline-none placeholder:text-muted-foreground"
+						/>
+						<button
+							type="submit"
+							disabled={!barInput.trim()}
+							className="flex size-8 items-center justify-center rounded-xl transition-all disabled:opacity-30"
+							style={{
+								background: "linear-gradient(135deg, #818cf8, #38bdf8)",
+								color: "#09090f",
+							}}
+						>
+							<Send className="size-3.5" />
+						</button>
+					</form>
+				</div>
 			)}
 
-			{/* Panel */}
+			{/* ── Right chat panel ── */}
 			{isOpen && (
 				<div
-					className={cn(
-						"fixed right-6 bottom-6 z-50 flex flex-col",
-						"h-[min(560px,calc(100vh-5rem))] w-[min(420px,calc(100vw-2rem))]",
-						"overflow-hidden rounded-2xl shadow-2xl",
-					)}
+					className="fixed right-0 z-50 flex flex-col"
 					style={{
+						top: "56px",
+						bottom: 0,
+						width: "50%",
 						background: "var(--card)",
-						border: "1px solid var(--border)",
-						boxShadow:
-							"0 0 40px rgba(129,140,248,0.1), 0 20px 60px rgba(0,0,0,0.5)",
+						borderLeft: "1px solid var(--border)",
 					}}
 				>
-					{/* Header */}
+					{/* Panel header */}
 					<div
 						className="flex shrink-0 items-center justify-between px-4 py-3"
 						style={{
 							background:
-								"linear-gradient(135deg, rgba(129,140,248,0.12), rgba(56,189,248,0.08))",
+								"linear-gradient(135deg, rgba(129,140,248,0.1), rgba(56,189,248,0.06))",
 							borderBottom: "1px solid var(--border)",
 						}}
 					>
@@ -111,8 +146,8 @@ export function ChatAgent({ report, serverUrl }: Props) {
 						</div>
 						<button
 							type="button"
-							className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
 							onClick={() => setIsOpen(false)}
+							className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
 							aria-label="Close chat"
 						>
 							<X className="size-3.5" />
@@ -120,7 +155,7 @@ export function ChatAgent({ report, serverUrl }: Props) {
 					</div>
 
 					{/* Messages */}
-					<ScrollArea className="flex-1 px-4 py-3">
+					<div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
 						{messages.length === 0 && (
 							<div className="space-y-3">
 								<p className="text-muted-foreground text-sm leading-relaxed">
@@ -131,7 +166,7 @@ export function ChatAgent({ report, serverUrl }: Props) {
 										<button
 											key={s}
 											type="button"
-											onClick={() => setInput(s)}
+											onClick={() => sendMessage(s)}
 											className="rounded-full border px-2.5 py-1.5 text-xs transition-colors hover:text-foreground"
 											style={{
 												background: "var(--secondary)",
@@ -146,129 +181,114 @@ export function ChatAgent({ report, serverUrl }: Props) {
 							</div>
 						)}
 
-						<div className="mt-3 space-y-3">
-							{messages.map((m) => (
-								<div
-									key={m.id}
-									className={cn(
-										"flex gap-2.5",
-										m.role === "user" ? "flex-row-reverse" : "flex-row",
-									)}
-								>
-									<div
-										className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full"
-										style={
-											m.role === "user"
-												? {
-														background:
-															"linear-gradient(135deg, #818cf8, #38bdf8)",
-														color: "#09090f",
-													}
-												: {
-														background: "var(--secondary)",
-														border: "1px solid var(--border)",
-														color: "var(--muted-foreground)",
-													}
-										}
-									>
-										{m.role === "user" ? (
-											<User className="size-3" />
-										) : (
-											<Bot className="size-3" />
-										)}
+						{messages.map((m) => (
+							<div key={m.id}>
+								{m.role === "user" ? (
+									/* User: compact pill aligned right */
+									<div className="flex justify-end">
+										<div
+											className="max-w-[78%] rounded-2xl px-4 py-2 text-sm leading-relaxed"
+											style={{
+												background: "linear-gradient(135deg, #818cf8, #38bdf8)",
+												color: "#09090f",
+												fontWeight: 500,
+											}}
+										>
+											{m.content}
+										</div>
 									</div>
-
-									<div
-										className="max-w-[85%] rounded-xl px-3.5 py-2.5 text-sm leading-relaxed"
-										style={
-											m.role === "user"
-												? {
-														background:
-															"linear-gradient(135deg, #818cf8, #38bdf8)",
-														color: "#09090f",
-														borderRadius: "12px 4px 12px 12px",
-													}
-												: {
-														background: "var(--secondary)",
-														border: "1px solid var(--border)",
-														color: "var(--foreground)",
-														borderRadius: "4px 12px 12px 12px",
-													}
-										}
-									>
-										{m.role === "assistant" ? (
-											<div className="prose prose-sm max-w-none [&_code]:text-xs [&_p]:my-1.5">
+								) : (
+									/* Assistant: clean text, no bubble */
+									<div className="flex items-start gap-3">
+										<div
+											className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full"
+											style={{
+												background:
+													"linear-gradient(135deg, rgba(129,140,248,0.2), rgba(56,189,248,0.15))",
+												border: "1px solid rgba(129,140,248,0.3)",
+											}}
+										>
+											<Bot className="size-2.5" style={{ color: "#818cf8" }} />
+										</div>
+										<div className="min-w-0 flex-1 text-foreground text-sm leading-relaxed">
+											<div className="prose prose-sm max-w-none [&_code]:text-xs [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_p]:my-1.5">
 												<ReactMarkdown remarkPlugins={[remarkGfm]}>
 													{m.content}
 												</ReactMarkdown>
 											</div>
-										) : (
-											<span>{m.content}</span>
-										)}
+										</div>
 									</div>
-								</div>
-							))}
+								)}
+							</div>
+						))}
 
-							{isLoading && (
-								<div className="flex gap-2.5">
-									<div
-										className="flex size-6 shrink-0 items-center justify-center rounded-full"
-										style={{
-											background: "var(--secondary)",
-											border: "1px solid var(--border)",
-										}}
-									>
-										<Bot className="size-3 text-muted-foreground" />
-									</div>
-									<div
-										className="rounded-xl px-3.5 py-2.5"
-										style={{
-											background: "var(--secondary)",
-											border: "1px solid var(--border)",
-											borderRadius: "4px 12px 12px 12px",
-										}}
-									>
-										<Loader2 className="size-3.5 animate-spin text-muted-foreground" />
-									</div>
+						{isLoading && (
+							<div className="flex items-center gap-3">
+								<div
+									className="flex size-5 shrink-0 items-center justify-center rounded-full"
+									style={{
+										background:
+											"linear-gradient(135deg, rgba(129,140,248,0.2), rgba(56,189,248,0.15))",
+										border: "1px solid rgba(129,140,248,0.3)",
+									}}
+								>
+									<Bot className="size-2.5" style={{ color: "#818cf8" }} />
 								</div>
-							)}
-							<div ref={bottomRef} />
-						</div>
-					</ScrollArea>
+								<div className="flex gap-1">
+									<span
+										className="size-1.5 animate-bounce rounded-full bg-muted-foreground"
+										style={{ animationDelay: "0ms" }}
+									/>
+									<span
+										className="size-1.5 animate-bounce rounded-full bg-muted-foreground"
+										style={{ animationDelay: "150ms" }}
+									/>
+									<span
+										className="size-1.5 animate-bounce rounded-full bg-muted-foreground"
+										style={{ animationDelay: "300ms" }}
+									/>
+								</div>
+							</div>
+						)}
+						<div ref={bottomRef} />
+					</div>
 
-					{/* Input */}
+					{/* Panel input */}
 					<form
+						className="flex shrink-0 items-center gap-2 px-4 py-3"
+						style={{
+							borderTop: "1px solid var(--border)",
+							background: "var(--background)",
+						}}
 						onSubmit={(e) => {
 							e.preventDefault();
 							if (!input.trim() || isLoading) return;
 							handleSubmit(e);
 						}}
-						className="flex shrink-0 gap-2 p-3"
-						style={{
-							borderTop: "1px solid var(--border)",
-							background: "rgba(0,0,0,0.2)",
-						}}
 					>
-						<Input
+						<input
 							value={input}
 							onChange={(e) => setInput(e.target.value)}
-							placeholder="Ask a question..."
+							placeholder="Ask a question…"
 							disabled={isLoading}
-							className="bg-background text-sm"
 							autoComplete="off"
+							className="flex-1 bg-transparent text-foreground text-sm outline-none placeholder:text-muted-foreground"
 						/>
-						<Button
+						<button
 							type="submit"
-							size="icon"
 							disabled={isLoading || !input.trim()}
-							className="shrink-0"
+							className="flex size-8 items-center justify-center rounded-xl transition-all disabled:opacity-30"
+							style={{
+								background: "linear-gradient(135deg, #818cf8, #38bdf8)",
+								color: "#09090f",
+							}}
 						>
 							{isLoading ? (
-								<Loader2 className="size-4 animate-spin" />
+								<Loader2 className="size-3.5 animate-spin" />
 							) : (
-								<Send className="size-4" />
+								<Send className="size-3.5" />
 							)}
-						</Button>
+						</button>
 					</form>
 				</div>
 			)}
