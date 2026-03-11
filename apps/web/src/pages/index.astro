@@ -76,7 +76,30 @@ const threatStyle: Record<string, string> = {
       <div class="orb w-[350px] h-[350px] top-[10%] left-[10%]" style="background: radial-gradient(ellipse, rgba(6,182,212,0.12) 0%, transparent 70%);"></div>
       <div class="orb w-[300px] h-[300px] top-[15%] right-[8%]" style="background: radial-gradient(ellipse, rgba(52,211,153,0.10) 0%, transparent 70%);"></div>
 
-      <div class="w-full max-w-[600px] text-center space-y-7 relative z-10">
+      <div class="w-full max-w-[760px] text-center space-y-7 relative z-10">
+
+        <!-- Browser chrome + URL bar demo -->
+        <div class="browser-chrome">
+          <!-- Traffic lights + nav -->
+          <div class="browser-chrome-left">
+            <span class="traffic-dot" style="background:#ff5f57;"></span>
+            <span class="traffic-dot" style="background:#ffbd2e;"></span>
+            <span class="traffic-dot" style="background:#28c940;"></span>
+            <div class="nav-btns">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+          <!-- URL bar -->
+          <div class="url-demo-bar">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="url-demo-lock">
+              <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <span class="url-demo-protocol">https://</span><span id="url-host" class="url-demo-host">virustotal</span><span id="url-cursor" class="url-demo-cursor"></span><span class="url-demo-rest">.com/gui/file/<span class="url-demo-hash">3ecc0186adba60fb53e9f6…e18b</span></span>
+          </div>
+          <!-- Spacer to balance left side -->
+          <div class="browser-chrome-right"></div>
+        </div>
 
         <!-- Headline -->
         <div class="space-y-2">
@@ -176,7 +199,124 @@ const threatStyle: Record<string, string> = {
   </div>
 </Layout>
 
+
+<style>
+  /* ── Browser chrome wrapper ───────────────────────────────────────────── */
+  .browser-chrome {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 18px;
+    border-radius: 9999px;
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10);
+  }
+
+  .browser-chrome-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .browser-chrome-right {
+    /* mirrors left width so URL bar is visually centered */
+    flex-shrink: 0;
+    width: 52px;
+  }
+
+  .traffic-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .nav-btns {
+    display: flex;
+    gap: 2px;
+    color: var(--muted-foreground);
+    opacity: 0.35;
+  }
+
+  /* ── URL demo bar ─────────────────────────────────────────────────────── */
+  .url-demo-bar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 6px 12px;
+    border-radius: 7px;
+    border: 1.5px solid var(--border);
+    background: var(--secondary);
+    font-family: ui-monospace, 'Cascadia Code', monospace;
+    font-size: 12.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: border-color 0.4s, box-shadow 0.4s;
+  }
+
+  /* focused state toggled by JS */
+  .url-demo-bar.focused {
+    border-color: color-mix(in srgb, var(--primary) 60%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent);
+  }
+
+  .url-demo-lock {
+    flex-shrink: 0;
+    margin-right: 7px;
+    color: var(--threat-clean);
+    opacity: 0.7;
+    transition: color 0.5s;
+  }
+
+  .url-demo-protocol { color: var(--muted-foreground); opacity: 0.6; }
+
+  .url-demo-host {
+    color: var(--foreground);
+    font-weight: 600;
+    transition: color 0.4s;
+  }
+
+  /* "virusmore" state */
+  .url-demo-host.vm {
+    color: var(--primary);
+  }
+
+  .url-demo-cursor {
+    display: inline-block;
+    width: 1.5px;
+    height: 13px;
+    background: var(--primary);
+    vertical-align: middle;
+    margin: 0 0.5px;
+    opacity: 0;
+    border-radius: 1px;
+    flex-shrink: 0;
+  }
+
+  .url-demo-cursor.active {
+    animation: url-cursor-blink 0.65s steps(1) infinite;
+  }
+
+  .url-demo-rest { color: var(--muted-foreground); opacity: 0.55; }
+
+  .url-demo-hash { opacity: 0.7; }
+
+  /* lock turns primary when on virusmore */
+  .url-demo-bar.vm .url-demo-lock { color: var(--primary); opacity: 0.8; }
+
+  @keyframes url-cursor-blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
+</style>
+
+
 <script>
+  /* ── Theme toggle ─────────────────────────────────────────────────────── */
   const btn  = document.getElementById("theme-toggle");
   const moon = document.getElementById("icon-moon");
   const sun  = document.getElementById("icon-sun");
@@ -194,6 +334,7 @@ const threatStyle: Record<string, string> = {
     syncIcons();
   });
 
+  /* ── Search form ──────────────────────────────────────────────────────── */
   document.getElementById("search-form")?.addEventListener("submit", (e) => {
     e.preventDefault();
     const raw = (document.getElementById("search-input") as HTMLInputElement).value.trim();
@@ -210,18 +351,18 @@ const threatStyle: Record<string, string> = {
     alert("Input not recognized. Paste a VirusTotal URL or a valid SHA256 hash.");
   });
 
-  // Focus glow on input
-  const input = document.getElementById("search-input");
+  /* ── Input glow ───────────────────────────────────────────────────────── */
+  const input = document.getElementById("search-input") as HTMLInputElement | null;
   input?.addEventListener("focus", () => {
-    (input as HTMLElement).style.borderColor = "var(--ring)";
-    (input as HTMLElement).style.boxShadow = "0 0 0 3px color-mix(in srgb, var(--ring) 20%, transparent)";
+    input.style.borderColor = "var(--ring)";
+    input.style.boxShadow = "0 0 0 3px color-mix(in srgb, var(--ring) 20%, transparent)";
   });
   input?.addEventListener("blur", () => {
-    (input as HTMLElement).style.borderColor = "var(--border)";
-    (input as HTMLElement).style.boxShadow = "none";
+    input.style.borderColor = "var(--border)";
+    input.style.boxShadow = "none";
   });
 
-  // Card hover glow
+  /* ── Card hover glow ──────────────────────────────────────────────────── */
   document.querySelectorAll<HTMLAnchorElement>("a[href^='/gui/']").forEach((card) => {
     card.addEventListener("mouseenter", () => {
       card.style.borderColor = "color-mix(in srgb, var(--primary) 40%, transparent)";
@@ -232,4 +373,69 @@ const threatStyle: Record<string, string> = {
       card.style.background = "var(--card)";
     });
   });
+
+  /* ── URL bar animation loop ───────────────────────────────────────────── */
+  const bar      = document.querySelector(".url-demo-bar")    as HTMLElement;
+  const hostEl   = document.getElementById("url-host")        as HTMLSpanElement;
+  const cursorEl = document.getElementById("url-cursor")      as HTMLSpanElement;
+
+  function sleep(ms: number) {
+    return new Promise<void>((r) => setTimeout(r, ms));
+  }
+
+  async function runUrlDemo() {
+    while (true) {
+      /* ── Reset: virustotal ── */
+      hostEl.textContent = "virustotal";
+      hostEl.classList.remove("vm");
+      bar.classList.remove("focused", "vm");
+      cursorEl.classList.remove("active");
+      cursorEl.style.opacity = "0";
+
+      await sleep(2000);
+
+      /* ── Focus ── */
+      bar.classList.add("focused");
+
+      await sleep(500);
+
+      /* ── Cursor appears ── */
+      cursorEl.style.opacity = "1";
+      cursorEl.classList.add("active");
+
+      await sleep(350);
+
+      /* ── Delete "virustotal" ── */
+      let text = "virustotal";
+      while (text.length > 0) {
+        text = text.slice(0, -1);
+        hostEl.textContent = text;
+        await sleep(82);
+      }
+
+      await sleep(160);
+
+      /* ── Type "virusmore" ── */
+      const target = "virusmore";
+      for (const ch of target) {
+        text += ch;
+        hostEl.textContent = text;
+        await sleep(112);
+      }
+
+      await sleep(300);
+
+      /* ── "Enter": cursor off, host turns primary, bar unfocuses ── */
+      cursorEl.classList.remove("active");
+      cursorEl.style.opacity = "0";
+      hostEl.classList.add("vm");
+      bar.classList.remove("focused");
+      bar.classList.add("vm");
+
+      /* ── Hold on virusmore state ── */
+      await sleep(3000);
+    }
+  }
+
+  runUrlDemo();
 </script>
