@@ -31,7 +31,7 @@ const threatStyle: Record<string, string> = {
 ---
 
 <Layout title="VirusMore — AI-powered security analysis">
-  <div class="min-h-screen flex flex-col">
+  <div class="h-screen overflow-hidden flex flex-col">
 
     <!-- Header -->
     <header class="h-14 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-50">
@@ -69,7 +69,7 @@ const threatStyle: Record<string, string> = {
     </header>
 
     <!-- Hero -->
-    <main class="flex-1 flex flex-col items-center px-6 pt-24 pb-20 relative overflow-hidden">
+    <main class="flex-1 flex flex-col items-center justify-center px-6 relative overflow-hidden">
 
       <!-- Gradient orbs -->
       <div class="orb w-[600px] h-[400px] top-[-80px] left-1/2 -translate-x-1/2" style="background: radial-gradient(ellipse, rgba(129,140,248,0.18) 0%, transparent 70%);"></div>
@@ -77,12 +77,6 @@ const threatStyle: Record<string, string> = {
       <div class="orb w-[300px] h-[300px] top-[15%] right-[8%]" style="background: radial-gradient(ellipse, rgba(52,211,153,0.10) 0%, transparent 70%);"></div>
 
       <div class="w-full max-w-[600px] text-center space-y-7 relative z-10">
-
-        <!-- Badge -->
-        <div class="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-medium border" style="background: color-mix(in srgb, var(--primary) 8%, transparent); border-color: color-mix(in srgb, var(--primary) 25%, transparent); color: var(--primary);">
-          <span class="size-1.5 rounded-full shrink-0" style="background: var(--threat-clean);"></span>
-          Powered by Gemini &amp; VirusTotal API
-        </div>
 
         <!-- Headline -->
         <div class="space-y-2">
@@ -132,7 +126,7 @@ const threatStyle: Record<string, string> = {
       </div>
 
       <!-- Examples -->
-      <div class="w-full max-w-[600px] mt-16 space-y-2 relative z-10">
+      <div class="w-full max-w-[600px] mt-10 space-y-2 relative z-10">
         <p class="text-[0.68rem] font-semibold uppercase tracking-widest text-muted-foreground mb-4 px-1">
           Quick examples
         </p>
@@ -159,12 +153,20 @@ const threatStyle: Record<string, string> = {
           </a>
         ))}
       </div>
+
+      <!-- Powered by -->
+      <div class="flex flex-col items-center gap-3 mt-12 relative z-10 opacity-60">
+        <span class="text-[0.6rem] font-semibold uppercase tracking-widest text-muted-foreground">Powered by</span>
+        <div class="flex items-center gap-8">
+          <img src="/virustotal.png" alt="VirusTotal" class="h-9 w-auto" style="filter: brightness(0) invert(0.4);" />
+          <img src="/gemini.png"     alt="Gemini"     class="h-9 w-auto" style="filter: brightness(0) invert(0.4);" />
+        </div>
+      </div>
     </main>
 
-    <footer class="border-t border-border py-5">
-      <p class="text-center text-xs text-muted-foreground">
+    <footer class="border-t border-border py-4 shrink-0">
+      <p class="text-center text-[0.68rem] text-muted-foreground/40">
         VirusMore is not affiliated with VirusTotal or Google LLC.
-        Analysis data is provided by the VirusTotal API.
       </p>
     </footer>
   </div>
