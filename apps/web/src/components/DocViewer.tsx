@@ -19,8 +19,11 @@ export function DocViewer({ analysisId, type, initialDoc, serverUrl }: Props) {
 	const [content, setContent] = useState(initialDoc ?? "");
 	const [isStreaming, setIsStreaming] = useState(!initialDoc);
 	const [sections, setSections] = useState<DocSection[]>([]);
-	const [activeId, setActiveId] = useState("");
+	const [activeId, setActiveId] = useState(() =>
+		typeof window !== "undefined" ? window.location.hash.slice(1) : "",
+	);
 	const contentRef = useRef<HTMLDivElement>(null);
+	const visibleMap = useRef<Map<string, boolean>>(new Map());
 
 	useEffect(() => {
 		if (content) setSections(extractSections(content));
@@ -49,19 +52,44 @@ export function DocViewer({ analysisId, type, initialDoc, serverUrl }: Props) {
 	}, [analysisId, type, serverUrl, initialDoc]);
 
 	useEffect(() => {
+		const onHashChange = () => setActiveId(window.location.hash.slice(1));
+		window.addEventListener("hashchange", onHashChange);
+		return () => window.removeEventListener("hashchange", onHashChange);
+	}, []);
+
+	useEffect(() => {
+		if (sections.length === 0) return;
+		const scrollRoot = contentRef.current?.closest("main") ?? null;
+		const headingEls = Array.from(
+			contentRef.current?.querySelectorAll("h2, h3") ?? [],
+		);
+
 		const observer = new IntersectionObserver(
 			(entries) => {
 				for (const e of entries) {
-					if (e.isIntersecting) setActiveId(e.target.id);
+					visibleMap.current.set(e.target.id, e.isIntersecting);
 				}
+				const first = headingEls.find((h) => visibleMap.current.get(h.id));
+				if (first) setActiveId(first.id);
 			},
-			{ rootMargin: "-80px 0px -60% 0px" },
+			{ root: scrollRoot, rootMargin: "-56px 0px -40% 0px" },
 		);
-		for (const h of contentRef.current?.querySelectorAll("h2, h3") ?? []) {
-			observer.observe(h);
-		}
-		return () => observer.disconnect();
-	}, []);
+		for (const h of headingEls) observer.observe(h);
+
+		const onScroll = () => {
+			const el = scrollRoot ?? document.documentElement;
+			const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+			if (atBottom && sections.length > 0) {
+				setActiveId(sections[sections.length - 1].id);
+			}
+		};
+		(scrollRoot ?? window).addEventListener("scroll", onScroll);
+
+		return () => {
+			observer.disconnect();
+			(scrollRoot ?? window).removeEventListener("scroll", onScroll);
+		};
+	}, [sections]);
 
 	return (
 		<div className="flex min-h-0">
@@ -102,30 +130,31 @@ export function DocViewer({ analysisId, type, initialDoc, serverUrl }: Props) {
 			{/* Table of contents */}
 			{sections.length > 0 && (
 				<aside className="hidden w-52 shrink-0 border-border border-l xl:block">
-					<ScrollArea className="sticky top-14 h-[calc(100vh-112px)]">
-						<div className="py-5 pr-4">
-							<p className="mb-3 pl-4 font-semibold text-[0.65rem] text-muted-foreground uppercase tracking-widest">
-								On this page
-							</p>
-							<nav className="space-y-px">
-								{sections.map((s) => (
-									<a
-										key={s.id}
-										href={`#${s.id}`}
-										className={cn(
-											"block border-l-2 py-1 text-[0.78rem] leading-snug transition-colors",
-											s.level === 3 ? "pl-6" : "pl-4",
-											activeId === s.id
-												? "border-primary font-medium text-primary"
-												: "border-transparent text-muted-foreground hover:border-border hover:text-foreground",
-										)}
-									>
-										{s.title}
-									</a>
-								))}
-							</nav>
-						</div>
-					</ScrollArea>
+					<div
+						className="sticky overflow-y-auto py-5 pr-4"
+						style={{ top: "56px", maxHeight: "calc(100vh - 56px)" }}
+					>
+						<p className="mb-3 pl-4 font-semibold text-[0.65rem] text-muted-foreground uppercase tracking-widest">
+							On this page
+						</p>
+						<nav className="space-y-px">
+							{sections.map((s) => (
+								<a
+									key={s.id}
+									href={`#${s.id}`}
+									className={cn(
+										"block border-l-2 py-1 text-[0.78rem] leading-snug transition-colors",
+										s.level === 3 ? "pl-6" : "pl-4",
+										activeId === s.id
+											? "border-primary font-medium text-primary"
+											: "border-transparent text-muted-foreground hover:border-border hover:text-foreground",
+									)}
+								>
+									{s.title}
+								</a>
+							))}
+						</nav>
+					</div>
 				</aside>
 			)}
 		</div>

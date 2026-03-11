@@ -9,57 +9,57 @@
 :root {
   --radius: 0.5rem;
 
-  /* GitHub-style light */
-  --background:           #ffffff;
-  --foreground:           #1f2328;
+  /* Light */
+  --background:           #f8f8fc;
+  --foreground:           #0d0d1a;
   --card:                 #ffffff;
-  --card-foreground:      #1f2328;
+  --card-foreground:      #0d0d1a;
   --popover:              #ffffff;
-  --popover-foreground:   #1f2328;
-  --primary:              #0969da;
+  --popover-foreground:   #0d0d1a;
+  --primary:              #6366f1;
   --primary-foreground:   #ffffff;
-  --secondary:            #f6f8fa;
-  --secondary-foreground: #1f2328;
-  --muted:                #f6f8fa;
-  --muted-foreground:     #656d76;
-  --accent:               #ddf4ff;
-  --accent-foreground:    #0969da;
-  --destructive:          #cf222e;
+  --secondary:            #f0f0f8;
+  --secondary-foreground: #0d0d1a;
+  --muted:                #f0f0f8;
+  --muted-foreground:     #71717a;
+  --accent:               #ede9fe;
+  --accent-foreground:    #6366f1;
+  --destructive:          #ef4444;
   --destructive-foreground: #ffffff;
-  --border:               #d0d7de;
-  --input:                #d0d7de;
-  --ring:                 #0969da;
+  --border:               #e2e2f0;
+  --input:                #e2e2f0;
+  --ring:                 #6366f1;
 
-  --threat-clean:         #1a7f37;
-  --threat-suspicious:    #9a6700;
-  --threat-malicious:     #cf222e;
+  --threat-clean:         #10b981;
+  --threat-suspicious:    #f59e0b;
+  --threat-malicious:     #ef4444;
 }
 
 .dark {
-  /* GitHub-style dark */
-  --background:           #0d1117;
-  --foreground:           #e6edf3;
-  --card:                 #161b22;
-  --card-foreground:      #e6edf3;
-  --popover:              #1c2128;
-  --popover-foreground:   #e6edf3;
-  --primary:              #58a6ff;
-  --primary-foreground:   #0d1117;
-  --secondary:            #21262d;
-  --secondary-foreground: #e6edf3;
-  --muted:                #21262d;
-  --muted-foreground:     #8b949e;
-  --accent:               #1f3147;
-  --accent-foreground:    #58a6ff;
-  --destructive:          #f85149;
-  --destructive-foreground: #0d1117;
-  --border:               #30363d;
-  --input:                #30363d;
-  --ring:                 #58a6ff;
+  /* Futuristic dark */
+  --background:           #09090f;
+  --foreground:           #e8e8f5;
+  --card:                 #0d0d18;
+  --card-foreground:      #e8e8f5;
+  --popover:              #111120;
+  --popover-foreground:   #e8e8f5;
+  --primary:              #818cf8;
+  --primary-foreground:   #09090f;
+  --secondary:            #12121e;
+  --secondary-foreground: #e8e8f5;
+  --muted:                #12121e;
+  --muted-foreground:     #6b7180;
+  --accent:               #1a1a30;
+  --accent-foreground:    #818cf8;
+  --destructive:          #f87171;
+  --destructive-foreground: #09090f;
+  --border:               #1e1e32;
+  --input:                #1e1e32;
+  --ring:                 #818cf8;
 
-  --threat-clean:         #3fb950;
-  --threat-suspicious:    #d29922;
-  --threat-malicious:     #f85149;
+  --threat-clean:         #34d399;
+  --threat-suspicious:    #fbbf24;
+  --threat-malicious:     #f87171;
 }
 
 /* ── Tailwind theme mapping ───────────────────────────────────────────────── */
@@ -115,7 +115,6 @@
     font-family: var(--font-mono);
   }
 
-  /* Remove default border from shadcn reset */
   * {
     border-color: var(--border);
   }
@@ -123,6 +122,22 @@
   ::selection {
     @apply bg-primary/20 text-foreground;
   }
+}
+
+/* ── Gradient text utility ────────────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #a78bfa 0%, #38bdf8 50%, #34d399 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Glow orb ─────────────────────────────────────────────────────────────── */
+.orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  pointer-events: none;
 }
 
 /* ── Markdown / Prose ─────────────────────────────────────────────────────── */

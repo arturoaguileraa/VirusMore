@@ -65,7 +65,7 @@ if (report) {
   <div class="flex flex-col h-screen overflow-hidden">
 
     <!-- Top header -->
-    <header class="h-14 border-b border-border bg-background/95 backdrop-blur-sm shrink-0 sticky top-0 z-50">
+    <header class="h-14 border-b border-border bg-background/80 backdrop-blur-md shrink-0 sticky top-0 z-50">
       <div class="h-full px-4 flex items-center gap-3">
 
         <!-- Logo + brand -->
@@ -78,7 +78,7 @@ if (report) {
 
         <!-- Breadcrumb: type + id -->
         <div class="flex items-center gap-2 min-w-0 flex-1">
-          <span class="text-xs font-medium text-muted-foreground bg-secondary border border-border rounded px-1.5 py-0.5 shrink-0">
+          <span class="text-xs font-semibold rounded-md px-1.5 py-0.5 shrink-0" style="background: color-mix(in srgb, var(--primary) 10%, transparent); border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent); color: var(--primary);">
             {typeLabel}
           </span>
           <code class="text-xs text-muted-foreground truncate font-mono">{id}</code>
@@ -90,7 +90,7 @@ if (report) {
             href={`https://www.virustotal.com/gui/${vtType}/${id}`}
             target="_blank"
             rel="noopener noreferrer"
-            class="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors border border-border rounded-md px-2.5 py-1.5 hover:bg-secondary"
+            class="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors border border-border rounded-lg px-2.5 py-1.5 hover:bg-secondary"
           >
             View on VirusTotal
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -99,7 +99,7 @@ if (report) {
           </a>
           <button
             id="theme-toggle"
-            class="h-8 w-8 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+            class="h-8 w-8 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
             aria-label="Toggle color theme"
           >
             <svg id="icon-moon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -210,7 +210,7 @@ if (report) {
 
           <!-- AI Documentation -->
           <section id="documentation" class="border-b border-border">
-            <div class="px-6 lg:px-8 py-3 border-b border-border flex items-center justify-between">
+            <div class="px-6 lg:px-8 py-3 border-b border-border flex items-center justify-between sticky top-0 z-10 bg-background/95 backdrop-blur-sm">
               <h2 class="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                 AI Documentation
               </h2>

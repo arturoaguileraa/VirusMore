@@ -54,13 +54,19 @@ export function ChatAgent({ report, serverUrl }: Props) {
 		<>
 			{/* Trigger */}
 			{!isOpen && (
-				<Button
+				<button
+					type="button"
 					onClick={() => setIsOpen(true)}
-					className="fixed right-6 bottom-6 z-50 h-10 gap-2 rounded-full px-5 shadow-lg"
+					className="fixed right-6 bottom-6 z-50 flex h-10 items-center gap-2 rounded-full px-5 font-semibold text-sm shadow-lg transition-all hover:opacity-90"
+					style={{
+						background: "linear-gradient(135deg, #818cf8, #38bdf8)",
+						color: "#09090f",
+						boxShadow: "0 0 20px rgba(129,140,248,0.3)",
+					}}
 				>
 					<MessageSquare className="size-4" />
 					Ask AI
-				</Button>
+				</button>
 			)}
 
 			{/* Panel */}
@@ -69,33 +75,48 @@ export function ChatAgent({ report, serverUrl }: Props) {
 					className={cn(
 						"fixed right-6 bottom-6 z-50 flex flex-col",
 						"h-[min(560px,calc(100vh-5rem))] w-[min(420px,calc(100vw-2rem))]",
-						"overflow-hidden rounded-xl border border-border bg-card shadow-2xl",
+						"overflow-hidden rounded-2xl shadow-2xl",
 					)}
+					style={{
+						background: "var(--card)",
+						border: "1px solid var(--border)",
+						boxShadow:
+							"0 0 40px rgba(129,140,248,0.1), 0 20px 60px rgba(0,0,0,0.5)",
+					}}
 				>
 					{/* Header */}
-					<div className="flex shrink-0 items-center justify-between border-border border-b bg-secondary/50 px-4 py-3">
+					<div
+						className="flex shrink-0 items-center justify-between px-4 py-3"
+						style={{
+							background:
+								"linear-gradient(135deg, rgba(129,140,248,0.12), rgba(56,189,248,0.08))",
+							borderBottom: "1px solid var(--border)",
+						}}
+					>
 						<div className="flex items-center gap-2">
 							<div
 								className={cn(
-									"size-1.5 rounded-full",
-									isLoading
-										? "animate-pulse bg-[--threat-suspicious]"
-										: "bg-[--threat-clean]",
+									"size-2 rounded-full",
+									isLoading ? "animate-pulse" : "",
 								)}
+								style={{
+									background: isLoading
+										? "var(--threat-suspicious)"
+										: "var(--threat-clean)",
+								}}
 							/>
-							<span className="font-semibold text-foreground text-sm">
+							<span className="font-semibold text-foreground text-sm tracking-wide">
 								Analysis Assistant
 							</span>
 						</div>
-						<Button
-							variant="ghost"
-							size="icon"
-							className="size-7 text-muted-foreground"
+						<button
+							type="button"
+							className="flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
 							onClick={() => setIsOpen(false)}
 							aria-label="Close chat"
 						>
 							<X className="size-3.5" />
-						</Button>
+						</button>
 					</div>
 
 					{/* Messages */}
@@ -111,7 +132,12 @@ export function ChatAgent({ report, serverUrl }: Props) {
 											key={s}
 											type="button"
 											onClick={() => setInput(s)}
-											className="rounded-full border border-border bg-secondary px-2.5 py-1.5 text-muted-foreground text-xs transition-colors hover:bg-muted hover:text-foreground"
+											className="rounded-full border px-2.5 py-1.5 text-xs transition-colors hover:text-foreground"
+											style={{
+												background: "var(--secondary)",
+												borderColor: "var(--border)",
+												color: "var(--muted-foreground)",
+											}}
 										>
 											{s}
 										</button>
@@ -130,12 +156,20 @@ export function ChatAgent({ report, serverUrl }: Props) {
 									)}
 								>
 									<div
-										className={cn(
-											"mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border",
+										className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full"
+										style={
 											m.role === "user"
-												? "border-primary bg-primary text-primary-foreground"
-												: "border-border bg-secondary text-muted-foreground",
-										)}
+												? {
+														background:
+															"linear-gradient(135deg, #818cf8, #38bdf8)",
+														color: "#09090f",
+													}
+												: {
+														background: "var(--secondary)",
+														border: "1px solid var(--border)",
+														color: "var(--muted-foreground)",
+													}
+										}
 									>
 										{m.role === "user" ? (
 											<User className="size-3" />
@@ -145,12 +179,22 @@ export function ChatAgent({ report, serverUrl }: Props) {
 									</div>
 
 									<div
-										className={cn(
-											"max-w-[85%] rounded-xl px-3.5 py-2.5 text-sm leading-relaxed",
+										className="max-w-[85%] rounded-xl px-3.5 py-2.5 text-sm leading-relaxed"
+										style={
 											m.role === "user"
-												? "rounded-tr-sm bg-primary text-primary-foreground"
-												: "rounded-tl-sm border border-border bg-secondary text-foreground",
-										)}
+												? {
+														background:
+															"linear-gradient(135deg, #818cf8, #38bdf8)",
+														color: "#09090f",
+														borderRadius: "12px 4px 12px 12px",
+													}
+												: {
+														background: "var(--secondary)",
+														border: "1px solid var(--border)",
+														color: "var(--foreground)",
+														borderRadius: "4px 12px 12px 12px",
+													}
+										}
 									>
 										{m.role === "assistant" ? (
 											<div className="prose prose-sm max-w-none [&_code]:text-xs [&_p]:my-1.5">
@@ -167,10 +211,23 @@ export function ChatAgent({ report, serverUrl }: Props) {
 
 							{isLoading && (
 								<div className="flex gap-2.5">
-									<div className="flex size-6 shrink-0 items-center justify-center rounded-full border border-border bg-secondary">
+									<div
+										className="flex size-6 shrink-0 items-center justify-center rounded-full"
+										style={{
+											background: "var(--secondary)",
+											border: "1px solid var(--border)",
+										}}
+									>
 										<Bot className="size-3 text-muted-foreground" />
 									</div>
-									<div className="rounded-xl rounded-tl-sm border border-border bg-secondary px-3.5 py-2.5">
+									<div
+										className="rounded-xl px-3.5 py-2.5"
+										style={{
+											background: "var(--secondary)",
+											border: "1px solid var(--border)",
+											borderRadius: "4px 12px 12px 12px",
+										}}
+									>
 										<Loader2 className="size-3.5 animate-spin text-muted-foreground" />
 									</div>
 								</div>
@@ -186,7 +243,11 @@ export function ChatAgent({ report, serverUrl }: Props) {
 							if (!input.trim() || isLoading) return;
 							handleSubmit(e);
 						}}
-						className="flex shrink-0 gap-2 border-border border-t bg-secondary/30 p-3"
+						className="flex shrink-0 gap-2 p-3"
+						style={{
+							borderTop: "1px solid var(--border)",
+							background: "rgba(0,0,0,0.2)",
+						}}
 					>
 						<Input
 							value={input}
