@@ -29,13 +29,13 @@ ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=4321
 
-COPY package.json ./
+COPY package.json bun.lock ./
 COPY apps/web/package.json ./apps/web/
 COPY packages/api/package.json ./packages/api/
 COPY packages/db/package.json ./packages/db/
 COPY packages/env/package.json ./packages/env/
 COPY packages/config/package.json ./packages/config/
-RUN bun install --production
+RUN bun install --production --frozen-lockfile
 
 COPY --from=build /app/apps/web/dist ./dist
 
