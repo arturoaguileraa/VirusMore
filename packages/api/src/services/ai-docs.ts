@@ -18,7 +18,7 @@ Structure your response with these sections (use ## for headers):
 6. **Recommendations** — what the user should do
 
 Rules:
-- Use emojis sparingly for severity: 🔴 malicious, 🟡 suspicious, 🟢 clean, ⚪ unknown
+- Do NOT use any emojis anywhere in the output
 - Be technical but clear
 - Format hashes and IPs in inline code blocks
 - Only include sections relevant to the analysis type (file/url/domain/ip)
