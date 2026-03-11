@@ -27,24 +27,24 @@ const { size = 22, class: className = "" } = Astro.props;
   <!-- Shield — wider -->
   <path
     d="M50 3 C50 3 86 12 92 16 C98 20 97 28 97 34 L97 66 C97 89 74 104 50 113 C26 104 3 89 3 66 L3 34 C3 28 2 20 8 16 C14 12 50 3 50 3 Z"
-    fill="#1e3a5f"
-    stroke="#22d3ee"
+    fill="#1a1a1a"
+    stroke="#818cf8"
     stroke-width="1.2"
-    stroke-opacity="0.25"
+    stroke-opacity="0.3"
   />
 
   <!-- ECG: flat — V spike — M double peak — dot (kept inside shield) -->
   <path
     d="M12 60 L24 60 L33 78 L47 28 C51 28 54 48 58 48 C62 48 65 26 70 26 C74 26 77 60 83 60"
     fill="none"
-    stroke="#22d3ee"
+    stroke="#818cf8"
     stroke-width="6.5"
     stroke-linecap="round"
     stroke-linejoin="round"
   />
 
   <!-- Dot glow -->
-  <circle cx="83" cy="60" r="14" fill="#22d3ee" opacity="0.10"/>
-  <circle cx="83" cy="60" r="9.5" fill="#22d3ee" opacity="0.20"/>
-  <circle cx="83" cy="60" r="5.5" fill="#22d3ee" filter="url(#dot-glow)"/>
+  <circle cx="83" cy="60" r="14" fill="#818cf8" opacity="0.10"/>
+  <circle cx="83" cy="60" r="9.5" fill="#818cf8" opacity="0.20"/>
+  <circle cx="83" cy="60" r="5.5" fill="#818cf8" filter="url(#dot-glow)"/>
 </svg>
