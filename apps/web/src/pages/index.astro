@@ -38,7 +38,9 @@ const threatStyle: Record<string, string> = {
       <div class="max-w-5xl mx-auto h-full px-6 flex items-center justify-between">
         <div class="flex items-center gap-2.5 text-foreground">
           <Logo size={32} class="text-primary" />
-          <span class="font-semibold tracking-tight text-[0.95rem]">VirusMore</span>
+          <span class="tracking-wide text-[0.95rem]" style="letter-spacing: 0.06em;">
+            <span class="font-light text-foreground/70">Virus</span><span class="font-semibold gradient-text">More</span>
+          </span>
         </div>
         <div class="flex items-center gap-4">
           <a
@@ -69,17 +71,20 @@ const threatStyle: Record<string, string> = {
     </header>
 
     <!-- Hero -->
-    <main class="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 py-10 sm:py-0 relative overflow-hidden overflow-y-auto sm:overflow-hidden">
+    <main class="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 sm:py-0 relative overflow-hidden overflow-y-auto sm:overflow-hidden">
 
-      <!-- Gradient orbs -->
-      <div class="orb w-[600px] h-[400px] top-[-80px] left-1/2 -translate-x-1/2" style="background: radial-gradient(ellipse, rgba(129,140,248,0.18) 0%, transparent 70%);"></div>
-      <div class="orb w-[350px] h-[350px] top-[10%] left-[10%]" style="background: radial-gradient(ellipse, rgba(6,182,212,0.12) 0%, transparent 70%);"></div>
-      <div class="orb w-[300px] h-[300px] top-[15%] right-[8%]" style="background: radial-gradient(ellipse, rgba(52,211,153,0.10) 0%, transparent 70%);"></div>
+      <!-- Gradient orbs — vertices of equilateral triangle, behind headline -->
+      <!-- Top center -->
+      <div class="orb w-[320px] h-[320px]" style="top: 12%; left: 50%; transform: translateX(-50%); background: radial-gradient(circle, rgba(139,92,246,0.45) 0%, transparent 65%);"></div>
+      <!-- Bottom left -->
+      <div class="orb w-[300px] h-[300px]" style="top: 36%; left: 41%; transform: translate(-50%, -50%); background: radial-gradient(circle, rgba(6,182,212,0.40) 0%, transparent 65%);"></div>
+      <!-- Bottom right -->
+      <div class="orb w-[300px] h-[300px]" style="top: 36%; right: 41%; transform: translate(50%, -50%); background: radial-gradient(circle, rgba(251,113,133,0.40) 0%, transparent 65%);"></div>
 
-      <div class="w-full max-w-[760px] text-center space-y-5 sm:space-y-7 relative z-10">
+      <div class="w-full max-w-[760px] text-center space-y-8 sm:space-y-7 relative z-10 py-12 sm:py-10">
 
         <!-- Browser chrome + URL bar demo -->
-        <div class="browser-chrome hidden sm:flex">
+        <div class="browser-chrome flex">
           <!-- Traffic lights + nav -->
           <div class="browser-chrome-left">
             <span class="traffic-dot" style="background:#ff5f57;"></span>
@@ -102,24 +107,24 @@ const threatStyle: Record<string, string> = {
         </div>
 
         <!-- Headline -->
-        <div class="space-y-2">
-          <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.08]">
+        <div class="space-y-1 hero-float mt-16 sm:mt-10">
+          <h1 class="text-4xl sm:text-5xl md:text-6xl font-light tracking-wide leading-[1.12] hero-line" style="letter-spacing: 0.04em; animation-delay: 0.05s;">
             Threat intel,
           </h1>
-          <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.08] gradient-text">
+          <h1 class="text-4xl sm:text-5xl md:text-6xl font-light tracking-wide leading-[1.12] gradient-text hero-line" style="letter-spacing: 0.04em; animation-delay: 0.2s;">
             explained by AI.
           </h1>
         </div>
 
         <!-- Subtext -->
-        <p class="text-muted-foreground text-base sm:text-lg leading-relaxed max-w-[480px] mx-auto">
+        <p class="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-[480px] mx-auto hero-line" style="animation-delay: 0.38s;">
           Replace <code class="rounded px-1.5 py-0.5 text-[0.82em] font-mono" style="background: var(--secondary); border: 1px solid var(--border); color: var(--foreground);">virustotal.com</code> with
           <code class="rounded px-1.5 py-0.5 text-[0.82em] font-mono" style="background: color-mix(in srgb, var(--primary) 10%, transparent); border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent); color: var(--primary);">virusmore.com</code>
           in any VirusTotal URL to get AI documentation and an interactive analysis agent.
         </p>
 
         <!-- Search -->
-        <form id="search-form" class="flex flex-col sm:flex-row gap-2 mt-2">
+        <form id="search-form" class="flex flex-col sm:flex-row gap-2 mt-2 hero-line" style="animation-delay: 0.52s;">
           <div class="flex-1 relative">
             <div class="absolute inset-0 rounded-xl pointer-events-none" style="background: linear-gradient(135deg, rgba(129,140,248,0.15), rgba(6,182,212,0.08)); padding: 1px;">
             </div>
@@ -182,7 +187,7 @@ const threatStyle: Record<string, string> = {
       </div>
 
       <!-- Powered by -->
-      <div class="flex flex-col items-center gap-3 mt-12 relative z-10 opacity-60">
+      <div class="flex flex-col items-center gap-3 mt-12 mb-10 sm:mb-0 relative z-10 opacity-60">
         <span class="text-[0.6rem] font-semibold uppercase tracking-widest text-muted-foreground">Powered by</span>
         <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 px-4">
           <img src="/virustotal.png" alt="VirusTotal" class="h-9 w-auto" style="filter: brightness(0) invert(0.4);" />
@@ -231,6 +236,27 @@ const threatStyle: Record<string, string> = {
 
 
 <style>
+  /* ── Hero entrance animation ──────────────────────────────────────────── */
+  @keyframes hero-fade-up {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes hero-float {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-8px); }
+  }
+
+  .hero-line {
+    opacity: 0;
+    animation: hero-fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .hero-float {
+    animation: hero-float 5s ease-in-out infinite;
+    animation-delay: 0.8s;
+  }
+
   /* ── Browser chrome wrapper ───────────────────────────────────────────── */
   .browser-chrome {
     display: flex;
